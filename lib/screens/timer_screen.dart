@@ -1,28 +1,49 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 class TimerScreen extends StatefulWidget {
+  static String route = '/TimerScreen';
+
   @override
   _TimerScreenState createState() => _TimerScreenState();
 }
 
-class _TimerScreenState extends State<TimerScreen> with TickerProviderStateMixin{
+class _TimerScreenState extends State<TimerScreen>
+    with TickerProviderStateMixin {
   AnimationController controller;
+  Map<String, String> _timerData = {
+    'sets': '',
+    'work': '',
+    'rest': '',
+  };
 
-  // bool isPlaying = false;
+  @override
+  void didChangeDependencies() {
+    _timerData =
+        ModalRoute.of(context).settings.arguments as Map<String, String>;
+    if (_timerData == null) {
+      return;
+    }
+
+    controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: _workTime),
+    );
+
+    super.didChangeDependencies();
+  }
 
   String get timerString {
-    Duration duration = controller.duration * controller.value;
+    Duration duration = controller.duration;
     return '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
   }
 
-  @override
-  void initState() {
-    super.initState();
-    controller = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 10),
-    );
+  int get _workTime {
+    var workDuration = _timerData['work'];
+
+    //TODO YED work duration is double. cast double to int then parse to string
+    return int.parse(workDuration);
   }
 
   @override
@@ -47,10 +68,10 @@ class _TimerScreenState extends State<TimerScreen> with TickerProviderStateMixin
                           builder: (BuildContext context, Widget child) {
                             return CustomPaint(
                                 painter: TimerPainter(
-                                  animation: controller,
-                                  backgroundColor: Colors.white,
-                                  color: themeData.indicatorColor,
-                                ));
+                              animation: controller,
+                              backgroundColor: Colors.white,
+                              color: themeData.indicatorColor,
+                            ));
                           },
                         ),
                       ),

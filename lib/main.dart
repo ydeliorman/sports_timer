@@ -40,7 +40,8 @@ class MyAppState extends State<MyApp> {
         ),
         home: StartScreen(),
         routes: {
-//          ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
+          StartScreen.route: (ctx) => StartScreen(),
+          TimerScreen.route: (ctx) => TimerScreen(),
         },
       ),
     );
