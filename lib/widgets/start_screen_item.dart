@@ -7,7 +7,7 @@ import 'package:sportstimer/providers/timer.dart';
 
 class StartScreenItem extends StatefulWidget {
   final String title;
-  final String textFormFieldValue;
+  String textFormFieldValue;
 
   StartScreenItem(
     this.title,
@@ -41,24 +41,30 @@ class _StartScreenItemState extends State<StartScreenItem> {
                       minValue: 1,
                       maxValue: 20,
                       infiniteLoop: true,
-                      onChanged: (value) => setState(() =>
-                          Provider.of<TimerDetail>(context, listen: false)
-                              .setTimerData(
-                                  value.toString(), StartScreenItemType.Sets)),
+                      onChanged: (value) => setState(() {
+                        widget.textFormFieldValue = value.toString();
+                        Provider.of<TimerDetail>(context, listen: false)
+                            .setTimerData(
+                                value.toString(), StartScreenItemType.Sets);
+                      }),
                     )
                   : NumberPicker.decimal(
                       initialValue: double.parse(widget.textFormFieldValue),
-                      minValue: 1,
-                      maxValue: 60,
+                      minValue: 0,
+                      maxValue: 15,
                       decimalPlaces: 2,
-                      onChanged: (value) => setState(() => widget.title ==
-                              "WORK"
-                          ? Provider.of<TimerDetail>(context, listen: false)
-                              .setTimerData(
-                                  value.toString(), StartScreenItemType.Work)
-                          : Provider.of<TimerDetail>(context, listen: false)
-                              .setTimerData(
-                                  value.toString(), StartScreenItemType.Rest)),
+                      onChanged: (value) => setState(
+                        () {
+                          widget.title == "WORK"
+                              ? Provider.of<TimerDetail>(context, listen: false)
+                                  .setTimerData(value.toString(),
+                                      StartScreenItemType.Work)
+                              : Provider.of<TimerDetail>(context, listen: false)
+                                  .setTimerData(value.toString(),
+                                      StartScreenItemType.Rest);
+                          widget.textFormFieldValue = value.toString();
+                        },
+                      ),
                     ),
             ),
           ],

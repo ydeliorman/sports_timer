@@ -18,6 +18,10 @@ class _TimerScreenState extends State<TimerScreen>
     'rest': '',
   };
 
+  int numberOfSets;
+  int workDuration;
+  int restDuration;
+
   @override
   void didChangeDependencies() {
     _timerData =
@@ -26,24 +30,62 @@ class _TimerScreenState extends State<TimerScreen>
       return;
     }
 
+    numberOfSets = int.parse(_timerData['sets']);
+
     controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: _workTime),
-    );
+    )..addStatusListener((AnimationStatus status) {
+      ///TODO yed after finishing work, go to rest duration
+        if (numberOfSets > 0 && status == AnimationStatus.dismissed) {
+          if (controller.isAnimating) {
+            controller.stop(canceled: true);
+          } else {
+            controller.reverse(
+                from: controller.value == 0.0 ? 1.0 : controller.value);
+          }
+        }
+
+        if (numberOfSets > 0 && status == AnimationStatus.completed) {
+          setState(() {
+            numberOfSets--;
+          });
+        }
+      });
 
     super.didChangeDependencies();
   }
 
   String get timerString {
-    Duration duration = controller.duration;
+    Duration duration = controller.duration * controller.value;
     return '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
   }
 
   int get _workTime {
-    var workDuration = _timerData['work'];
+    return _extractNumberPickerTime("work");
+  }
 
-    //TODO YED work duration is double. cast double to int then parse to string
-    return int.parse(workDuration);
+  int get _restTime {
+    return _extractNumberPickerTime("rest");
+  }
+
+  int _extractNumberPickerTime(String numberPickerType) {
+    int workDurationDecimalPart;
+
+    ///if the number is 0 18 -> workDurationInDecimal will be 0.18
+    var workDurationInDecimal = double.parse(_timerData[numberPickerType]);
+    int workDurationIntPart = workDurationInDecimal.toInt();
+
+    ///if the decimal part is divided by 10(length == 1), multiply by then the extracted decimal part
+    if (workDurationInDecimal.toString().split('.')[1].length == 1) {
+      workDurationDecimalPart =
+          int.tryParse(workDurationInDecimal.toString().split('.')[1]) * 10;
+    } else if (workDurationInDecimal.toString().split('.')[1].length == 2) {
+      workDurationDecimalPart =
+          int.tryParse(workDurationInDecimal.toString().split('.')[1]);
+    }
+
+    return 60 * workDurationIntPart + workDurationDecimalPart;
   }
 
   @override
@@ -55,6 +97,10 @@ class _TimerScreenState extends State<TimerScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
+            Container(
+              ///todo yed place remaining sets in a better place
+              child: Text(numberOfSets == 0 ? 'Last Set':'Remaining Sets: $numberOfSets'),
+            ),
             Expanded(
               child: Align(
                 alignment: FractionalOffset.center,
@@ -82,7 +128,7 @@ class _TimerScreenState extends State<TimerScreen>
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             Text(
-                              "Count Down",
+                              "Sets: $numberOfSets ",
                               style: themeData.textTheme.subhead,
                             ),
                             AnimatedBuilder(
@@ -116,8 +162,6 @@ class _TimerScreenState extends State<TimerScreen>
                       },
                     ),
                     onPressed: () {
-                      // setState(() => isPlaying = !isPlaying);
-
                       if (controller.isAnimating) {
                         controller.stop(canceled: true);
                       } else {

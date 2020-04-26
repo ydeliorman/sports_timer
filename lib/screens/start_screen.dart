@@ -18,9 +18,7 @@ class _StartScreenState extends State<StartScreen> {
   @override
   Widget build(BuildContext context) {
     const firstColor = Color(0xff5b86e5);
-    var _setsValue = "3";
-    var _workValue = "30";
-    var _restValue = "5";
+    Map<String, String> timerData = Provider.of<TimerDetail>(context).getTimerData();
 
     return Scaffold(
         body: new Material(
@@ -33,15 +31,15 @@ class _StartScreenState extends State<StartScreen> {
               children: <Widget>[
                 StartScreenItem(
                   "SETS",
-                  _setsValue,
+                  timerData['sets'],
                 ),
                 StartScreenItem(
                   "WORK",
-                  _workValue,
+                  timerData['work'],
                 ),
                 StartScreenItem(
                   "REST",
-                  _restValue,
+                  timerData['rest'],
                 ),
                 Divider(),
                 NiceButton(
