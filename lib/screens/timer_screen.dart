@@ -18,9 +18,8 @@ class _TimerScreenState extends State<TimerScreen>
     'rest': '',
   };
 
-  int numberOfSets;
-  int workDuration;
-  int restDuration;
+  int _numberOfSets;
+  bool isWorkMode = true;
 
   @override
   void didChangeDependencies() {
@@ -30,25 +29,24 @@ class _TimerScreenState extends State<TimerScreen>
       return;
     }
 
-    numberOfSets = int.parse(_timerData['sets']);
+    _numberOfSets = int.parse(_timerData['sets']);
 
     controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: _workTime),
     )..addStatusListener((AnimationStatus status) {
-      ///TODO yed after finishing work, go to rest duration
-        if (numberOfSets > 0 && status == AnimationStatus.dismissed) {
+        if (_numberOfSets > 0 && status == AnimationStatus.dismissed) {
           if (controller.isAnimating) {
             controller.stop(canceled: true);
-          } else {
+          } else if(status == AnimationStatus.dismissed){
+//            controller.duration = Duration(milliseconds: _restTime);
             controller.reverse(
                 from: controller.value == 0.0 ? 1.0 : controller.value);
           }
         }
-
-        if (numberOfSets > 0 && status == AnimationStatus.completed) {
+        if (_numberOfSets > 0 && status == AnimationStatus.completed) {
           setState(() {
-            numberOfSets--;
+            _numberOfSets--;
           });
         }
       });
@@ -99,7 +97,9 @@ class _TimerScreenState extends State<TimerScreen>
           children: <Widget>[
             Container(
               ///todo yed place remaining sets in a better place
-              child: Text(numberOfSets == 0 ? 'Last Set':'Remaining Sets: $numberOfSets'),
+              child: Text(_numberOfSets == 0
+                  ? 'Last Set'
+                  : 'Remaining Sets: $_numberOfSets'),
             ),
             Expanded(
               child: Align(
@@ -128,7 +128,7 @@ class _TimerScreenState extends State<TimerScreen>
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             Text(
-                              "Sets: $numberOfSets ",
+                              isWorkMode ? 'Work' : 'Rest',
                               style: themeData.textTheme.subhead,
                             ),
                             AnimatedBuilder(
