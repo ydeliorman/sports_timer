@@ -11,7 +11,7 @@ class TimerScreen extends StatefulWidget {
 
 class _TimerScreenState extends State<TimerScreen>
     with TickerProviderStateMixin {
-  AnimationController controller;
+  AnimationController _controller;
   Map<String, String> _timerData = {
     'sets': '',
     'work': '',
@@ -25,17 +25,19 @@ class _TimerScreenState extends State<TimerScreen>
     try {
       while (_numberOfSets > 0) {
         if (isWorkMode) {
-          controller.duration = Duration(seconds: _workTime);
+          _controller.duration = Duration(seconds: _workTime);
         } else {
-          controller.duration = Duration(seconds: _restTime);
+          _controller.duration = Duration(seconds: _restTime);
         }
 
-        await controller
-            .reverse(from: controller.value == 0.0 ? 1.0 : controller.value)
-            .orCancel;
+        if (!(_numberOfSets == 1 && !isWorkMode)) {
+          await _controller
+              .reverse(from: _controller.value == 0.0 ? 1.0 : _controller.value)
+              .orCancel;
+        }
         setState(() {
           /// decrease number of sets after rest period
-          if(!isWorkMode) {
+          if (!isWorkMode) {
             _numberOfSets -= 1;
           }
           isWorkMode = !isWorkMode;
@@ -44,6 +46,10 @@ class _TimerScreenState extends State<TimerScreen>
     } catch (error) {
       print("error");
     }
+  }
+
+  void _pauseAnimation() {
+    _controller.stop(canceled: true);
   }
 
   @override
@@ -55,37 +61,22 @@ class _TimerScreenState extends State<TimerScreen>
     }
 
     _numberOfSets = int.parse(_timerData['sets']);
-
-    controller = AnimationController(
+    _controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: _workTime),
-    ) /*..addStatusListener((AnimationStatus status) {
-        if (_numberOfSets > 0 && status == AnimationStatus.dismissed) {
-          if (controller.isAnimating) {
-            controller.stop(canceled: true);
-          } else if (status == AnimationStatus.dismissed) {
-            controller.duration = Duration(milliseconds: _restTime);
-            controller.reverse(
-                from: controller.value == 0.0 ? 1.0 : controller.value);
-          }
-        }
-        if (_numberOfSets > 0 &&
-            status == AnimationStatus.completed &&
-            (controller.value == 0.0 || controller.value == 1.0) &&
-            !controller.isAnimating) {
-          setState(() {
-            _numberOfSets--;
-            isWorkMode = !isWorkMode;
-          });
-        }
-      })*/
-        ;
+    );
 
     super.didChangeDependencies();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
   String get timerString {
-    Duration duration = controller.duration * controller.value;
+    Duration duration = _controller.duration * _controller.value;
     return '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
   }
 
@@ -140,11 +131,11 @@ class _TimerScreenState extends State<TimerScreen>
                     children: <Widget>[
                       Positioned.fill(
                         child: AnimatedBuilder(
-                          animation: controller,
+                          animation: _controller,
                           builder: (BuildContext context, Widget child) {
                             return CustomPaint(
                                 painter: TimerPainter(
-                              animation: controller,
+                              animation: _controller,
                               backgroundColor: Colors.white,
                               color: themeData.indicatorColor,
                             ));
@@ -162,7 +153,7 @@ class _TimerScreenState extends State<TimerScreen>
                               style: themeData.textTheme.subhead,
                             ),
                             AnimatedBuilder(
-                                animation: controller,
+                                animation: _controller,
                                 builder: (BuildContext context, Widget child) {
                                   return Text(
                                     timerString,
@@ -184,15 +175,17 @@ class _TimerScreenState extends State<TimerScreen>
                 children: <Widget>[
                   FloatingActionButton(
                     child: AnimatedBuilder(
-                      animation: controller,
+                      animation: _controller,
                       builder: (BuildContext context, Widget child) {
-                        return Icon(controller.isAnimating
+                        return Icon(_controller.isAnimating
                             ? Icons.pause
                             : Icons.play_arrow);
                       },
                     ),
                     onPressed: () {
-                      _startAnimation();
+                      _controller.isAnimating
+                          ? _pauseAnimation()
+                          : _startAnimation();
                     },
                   )
                 ],
