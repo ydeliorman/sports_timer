@@ -21,6 +21,31 @@ class _TimerScreenState extends State<TimerScreen>
   int _numberOfSets;
   bool isWorkMode = true;
 
+  Future<void> _startAnimation() async {
+    try {
+      while (_numberOfSets > 0) {
+        if (isWorkMode) {
+          controller.duration = Duration(seconds: _workTime);
+        } else {
+          controller.duration = Duration(seconds: _restTime);
+        }
+
+        await controller
+            .reverse(from: controller.value == 0.0 ? 1.0 : controller.value)
+            .orCancel;
+        setState(() {
+          /// decrease number of sets after rest period
+          if(!isWorkMode) {
+            _numberOfSets -= 1;
+          }
+          isWorkMode = !isWorkMode;
+        });
+      }
+    } catch (error) {
+      print("error");
+    }
+  }
+
   @override
   void didChangeDependencies() {
     _timerData =
@@ -34,22 +59,27 @@ class _TimerScreenState extends State<TimerScreen>
     controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: _workTime),
-    )..addStatusListener((AnimationStatus status) {
+    ) /*..addStatusListener((AnimationStatus status) {
         if (_numberOfSets > 0 && status == AnimationStatus.dismissed) {
           if (controller.isAnimating) {
             controller.stop(canceled: true);
-          } else if(status == AnimationStatus.dismissed){
-//            controller.duration = Duration(milliseconds: _restTime);
+          } else if (status == AnimationStatus.dismissed) {
+            controller.duration = Duration(milliseconds: _restTime);
             controller.reverse(
                 from: controller.value == 0.0 ? 1.0 : controller.value);
           }
         }
-        if (_numberOfSets > 0 && status == AnimationStatus.completed) {
+        if (_numberOfSets > 0 &&
+            status == AnimationStatus.completed &&
+            (controller.value == 0.0 || controller.value == 1.0) &&
+            !controller.isAnimating) {
           setState(() {
             _numberOfSets--;
+            isWorkMode = !isWorkMode;
           });
         }
-      });
+      })*/
+        ;
 
     super.didChangeDependencies();
   }
@@ -97,7 +127,7 @@ class _TimerScreenState extends State<TimerScreen>
           children: <Widget>[
             Container(
               ///todo yed place remaining sets in a better place
-              child: Text(_numberOfSets == 0
+              child: Text(_numberOfSets == 1
                   ? 'Last Set'
                   : 'Remaining Sets: $_numberOfSets'),
             ),
@@ -162,14 +192,7 @@ class _TimerScreenState extends State<TimerScreen>
                       },
                     ),
                     onPressed: () {
-                      if (controller.isAnimating) {
-                        controller.stop(canceled: true);
-                      } else {
-                        controller.reverse(
-                            from: controller.value == 0.0
-                                ? 1.0
-                                : controller.value);
-                      }
+                      _startAnimation();
                     },
                   )
                 ],
