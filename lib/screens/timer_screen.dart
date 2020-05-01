@@ -13,6 +13,7 @@ class _TimerScreenState extends State<TimerScreen>
     with TickerProviderStateMixin {
   AnimationController _controller;
   Map<String, String> _timerData = {
+    'presetName': '',
     'sets': '',
     'work': '',
     'rest': '',

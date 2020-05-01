@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sportstimer/providers/timer.dart';
+import 'package:sportstimer/providers/timer_detail_provider.dart';
 import 'package:sportstimer/screens/start_screen.dart';
 import 'package:sportstimer/screens/timer_screen.dart';
 

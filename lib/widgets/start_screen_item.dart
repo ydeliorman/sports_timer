@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
 import 'package:sportstimer/enums/StartScreenItemType.dart';
-import 'package:sportstimer/providers/timer.dart';
+import 'package:sportstimer/providers/timer_detail_provider.dart';
 
 class StartScreenItem extends StatefulWidget {
   final String title;

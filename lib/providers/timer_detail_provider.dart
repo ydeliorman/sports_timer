@@ -5,12 +5,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sportstimer/enums/StartScreenItemType.dart';
 
 class TimerDetail with ChangeNotifier {
-  String sets = "3";
-  String workDuration = "0.3";
-  String restDuration = "0.05";
+  static String presetName = "";
+  static String sets = "3";
+  static String workDuration = "0.3";
+  static String restDuration = "0.05";
+  Map<String, String> _timerData = {
+    'presetName': '',
+    'sets': sets,
+    'work': workDuration,
+    'rest': restDuration,
+  };
 
   Map<String, String> getTimerData() {
     return {
+      'presetName': presetName,
       'sets': sets,
       'work': workDuration,
       'rest': restDuration,
@@ -55,6 +63,6 @@ class TimerDetail with ChangeNotifier {
       };
     }
 
-    return json.decode(prefs.getString('workOutData')) as Map<String, String>;
+    return await json.decode(prefs.getString('workOutData')) as Map<String, String>;
   }
 }

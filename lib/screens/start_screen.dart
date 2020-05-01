@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nice_button/nice_button.dart';
 import 'package:provider/provider.dart';
-import 'package:sportstimer/providers/timer.dart';
+import 'package:sportstimer/providers/timer_detail_provider.dart';
 import 'package:sportstimer/screens/timer_screen.dart';
 import 'package:sportstimer/widgets/T6Widget.dart';
 import 'package:sportstimer/widgets/start_screen_item.dart';
@@ -16,12 +16,6 @@ class StartScreen extends StatefulWidget {
 class _StartScreenState extends State<StartScreen> {
   TextEditingController _textFieldController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  Map<String, String> _timerData = {
-    'presetName': '',
-    'sets': '',
-    'work': '',
-    'rest': '',
-  };
 
   void _startWorkout() {
     _formKey.currentState.save();
@@ -75,6 +69,8 @@ class _StartScreenState extends State<StartScreen> {
     Map<String, String> timerData =
         Provider.of<TimerDetail>(context, listen: false).getTimerData();
 
+    ///TODO YED storeWorkOutInfo should finished. then it should set state and it built. check for loading indicator.
+    String presetName = timerData['presetName'];
     String sets = timerData['sets'];
     String work = timerData['work'];
     String rest = timerData['rest'];
