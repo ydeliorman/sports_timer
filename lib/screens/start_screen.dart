@@ -3,7 +3,7 @@ import 'package:nice_button/nice_button.dart';
 import 'package:provider/provider.dart';
 import 'package:sportstimer/providers/timer_detail_provider.dart';
 import 'package:sportstimer/screens/timer_screen.dart';
-import 'package:sportstimer/widgets/T6Widget.dart';
+import 'package:sportstimer/widgets/UtilityWidget.dart';
 import 'package:sportstimer/widgets/start_screen_item.dart';
 
 class StartScreen extends StatefulWidget {
@@ -16,6 +16,7 @@ class StartScreen extends StatefulWidget {
 class _StartScreenState extends State<StartScreen> {
   TextEditingController _textFieldController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
   void _startWorkout() {
     _formKey.currentState.save();
@@ -50,12 +51,17 @@ class _StartScreenState extends State<StartScreen> {
                 }),
             new FlatButton(
                 child: const Text('SAVE'),
-                onPressed: () {
+                onPressed: () async {
+                  setState(() {
+                    _isLoading = true;
+                  });
                   var presetName = _textFieldController.text;
-                  Provider.of<TimerDetail>(context, listen: false)
+                  await Provider.of<TimerDetail>(context, listen: false)
                       .storeWorkOutInfo(presetName);
                   Navigator.of(ctx).pop();
-                  setState(() {});
+                  setState(() {
+                    _isLoading = false;
+                  });
                 }),
           ],
         ),
@@ -69,7 +75,6 @@ class _StartScreenState extends State<StartScreen> {
     Map<String, String> timerData =
         Provider.of<TimerDetail>(context, listen: false).getTimerData();
 
-    ///TODO YED storeWorkOutInfo should finished. then it should set state and it built. check for loading indicator.
     String presetName = timerData['presetName'];
     String sets = timerData['sets'];
     String work = timerData['work'];
@@ -118,40 +123,46 @@ class _StartScreenState extends State<StartScreen> {
                       icon: Icons.accessibility,
                       onPressed: _startWorkout,
                     ),
-                    Container(
-                      margin: EdgeInsets.only(left: 16, top: 16, right: 16),
-                      decoration: boxDecoration(
-                          radius: 16,
-                          showShadow: true,
-                          bgColor: Color(0XFFffffff)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            text(
-                              "sets",
-                              textColor: Color(0XFF464545),
+                    _isLoading
+                        ? CircularProgressIndicator()
+                        : Container(
+                            margin:
+                                EdgeInsets.only(left: 16, top: 16, right: 16),
+                            decoration: boxDecoration(
+                                radius: 16,
+                                showShadow: true,
+                                bgColor: Color(0XFFffffff)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  text(
+                                    presetName,
+                                    textColor: Color(0XFF464545),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      text("Work"),
+                                      text(work,
+                                          textColor: Color(0XFF313384)),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      text("Rest"),
+                                      text(rest,
+                                          textColor: Color(0XFF313384)),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                text("rest"),
-                                text("rest value",
-                                    textColor: Color(0XFF313384)),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                text("rest"),
-                                text("work", textColor: Color(0XFF313384)),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                          ),
                   ],
                 ),
               ),

@@ -10,7 +10,7 @@ class TimerDetail with ChangeNotifier {
   static String workDuration = "0.3";
   static String restDuration = "0.05";
   Map<String, String> _timerData = {
-    'presetName': '',
+    'presetName': presetName,
     'sets': sets,
     'work': workDuration,
     'rest': restDuration,
@@ -49,10 +49,10 @@ class TimerDetail with ChangeNotifier {
       'rest': timerData['rest'],
     });
 
-    prefs.setString('workOutData', workOutData);
+    prefs.setString(presetName, workOutData);
   }
 
-  Future<Map<String, String>> getStoredWorkOutInfo() async {
+  getStoredWorkOutInfo(presetName) async {
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey('workOutData')) {
       return {
@@ -63,6 +63,6 @@ class TimerDetail with ChangeNotifier {
       };
     }
 
-    return await json.decode(prefs.getString('workOutData')) as Map<String, String>;
+    return json.decode(prefs.getString('workOutData')) as Map<String, String>;
   }
 }
