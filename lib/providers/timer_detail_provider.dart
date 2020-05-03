@@ -5,10 +5,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sportstimer/enums/StartScreenItemType.dart';
 
 class TimerDetail with ChangeNotifier {
-  static String presetName = "";
-  static String sets = "3";
-  static String workDuration = "0.3";
-  static String restDuration = "0.05";
+  static var presetName = "";
+  static var sets = "3";
+  static var workDuration = "0.3";
+  static var restDuration = "0.05";
   Map<String, String> _timerData = {
     'presetName': presetName,
     'sets': sets,
@@ -35,6 +35,34 @@ class TimerDetail with ChangeNotifier {
     }
   }
 
+  getStoredWorkOutInfo(presetName) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey(presetName)) {
+      return {
+        'presetName': '',
+        'sets': '',
+        'work': '',
+        'rest': '',
+      };
+    }
+
+    ///TODO yed burası exceğtion atıyo
+    return json.decode(prefs.getString('workOutData')) as Map<String, String> ?? getTimerData();
+  }
+
+  getAllWorkOutInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> keyList = prefs.getKeys().toList();
+
+    List<Map<String, String>> workOutList = [];
+
+    for (var i = 0; i < keyList.length; i++) {
+      workOutList.add(await getStoredWorkOutInfo(keyList[i]));
+    }
+
+    return workOutList;
+  }
+
   Future<void> storeWorkOutInfo(String presetName) async {
     var timerData = getTimerData();
     if (timerData == null) {
@@ -50,19 +78,5 @@ class TimerDetail with ChangeNotifier {
     });
 
     prefs.setString(presetName, workOutData);
-  }
-
-  getStoredWorkOutInfo(presetName) async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('workOutData')) {
-      return {
-        'presetName': '',
-        'sets': '',
-        'work': '',
-        'rest': '',
-      };
-    }
-
-    return json.decode(prefs.getString('workOutData')) as Map<String, String>;
   }
 }
