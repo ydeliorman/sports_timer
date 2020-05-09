@@ -43,7 +43,7 @@ class _StartScreenItemState extends State<StartScreenItem> {
                       infiniteLoop: true,
                       onChanged: (value) => setState(() {
                         widget.textFormFieldValue = value.toString();
-                        Provider.of<TimerDetail>(context, listen: false)
+                        Provider.of<TimerProvider>(context, listen: false)
                             .setTimerData(
                                 value.toString(), StartScreenItemType.Sets);
                       }),
@@ -56,10 +56,10 @@ class _StartScreenItemState extends State<StartScreenItem> {
                       onChanged: (value) => setState(
                         () {
                           widget.title == "WORK"
-                              ? Provider.of<TimerDetail>(context, listen: false)
+                              ? Provider.of<TimerProvider>(context, listen: false)
                                   .setTimerData(value.toString(),
                                       StartScreenItemType.Work)
-                              : Provider.of<TimerDetail>(context, listen: false)
+                              : Provider.of<TimerProvider>(context, listen: false)
                                   .setTimerData(value.toString(),
                                       StartScreenItemType.Rest);
                           widget.textFormFieldValue = value.toString();

@@ -28,7 +28,7 @@ class MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
-          value: TimerDetail(),
+          value: TimerProvider(),
         ),
       ],
       child: MaterialApp(

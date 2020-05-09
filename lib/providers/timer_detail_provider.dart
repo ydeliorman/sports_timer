@@ -1,20 +1,36 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sportstimer/enums/StartScreenItemType.dart';
+import 'package:sportstimer/models/timer_detail_model.dart';
 
-class TimerDetail with ChangeNotifier {
+class TimerProvider with ChangeNotifier {
+  List<TimerDetailModel> timerDetails = [];
   static var presetName = "";
   static var sets = "3";
   static var workDuration = "0.3";
   static var restDuration = "0.05";
-  Map<String, String> _timerData = {
-    'presetName': presetName,
-    'sets': sets,
-    'work': workDuration,
-    'rest': restDuration,
-  };
+
+  TimerProvider() {
+    initialState();
+  }
+
+  List<TimerDetailModel> get allTimerDetails =>
+      timerDetails;
+
+  void initialState() {
+    syncDataWithProvider();
+  }
+
+  void addTimerDetail(TimerDetailModel _timerDetail) {
+    timerDetails.add(_timerDetail);
+
+    updateSharedPreferences();
+
+    notifyListeners();
+  }
 
   Map<String, String> getTimerData() {
     return {
@@ -35,48 +51,35 @@ class TimerDetail with ChangeNotifier {
     }
   }
 
-  getStoredWorkOutInfo(presetName) async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey(presetName)) {
-      return {
-        'presetName': '',
-        'sets': '',
-        'work': '',
-        'rest': '',
-      };
-    }
+  void removeTimerDetail(TimerDetailModel _timerDetail) {
+    timerDetails.removeWhere((timerDetail) => timerDetail.presetName == _timerDetail.presetName);
 
-    ///TODO yed burası exceğtion atıyo
-    return json.decode(prefs.getString('workOutData')) as Map<String, String> ?? getTimerData();
+    updateSharedPreferences();
+
+    notifyListeners();
   }
 
-  getAllWorkOutInfo() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> keyList = prefs.getKeys().toList();
-
-    List<Map<String, String>> workOutList = [];
-
-    for (var i = 0; i < keyList.length; i++) {
-      workOutList.add(await getStoredWorkOutInfo(keyList[i]));
-    }
-
-    return workOutList;
+  int getTimerDetailLength() {
+    return timerDetails.length;
   }
 
-  Future<void> storeWorkOutInfo(String presetName) async {
-    var timerData = getTimerData();
-    if (timerData == null) {
-      return;
+  Future updateSharedPreferences() async {
+    List<String> timerDetailList =
+        timerDetails.map((f) => json.encode(f.toJson())).toList();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setStringList('timerDetailList', timerDetailList);
+  }
+
+  Future syncDataWithProvider() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var result = prefs.getStringList('timerDetailList');
+
+    if (result != null) {
+      timerDetails =
+          result.map((f) => TimerDetailModel.fromJson(json.decode(f))).toList();
     }
 
-    final prefs = await SharedPreferences.getInstance();
-    final workOutData = jsonEncode({
-      'presetName': presetName,
-      'sets': timerData['sets'],
-      'work': timerData['work'],
-      'rest': timerData['rest'],
-    });
-
-    prefs.setString(presetName, workOutData);
+    notifyListeners();
   }
 }

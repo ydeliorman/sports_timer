@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nice_button/nice_button.dart';
 import 'package:provider/provider.dart';
+import 'package:sportstimer/models/timer_detail_model.dart';
 import 'package:sportstimer/providers/timer_detail_provider.dart';
 import 'package:sportstimer/screens/timer_screen.dart';
 import 'package:sportstimer/widgets/UtilityWidget.dart';
@@ -17,14 +18,23 @@ class _StartScreenState extends State<StartScreen> {
   TextEditingController _textFieldController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
-  List<Map<String, String>> _workOutList = [];
+  String presetName;
+  String sets = "3";
+  String work = "0.3";
+  String rest = "0.05";
+  Map<String, String> _timerData = {
+    'presetName': '',
+    'sets': '',
+    'work': '',
+    'rest': '',
+  };
 
   void _startWorkout() {
     _formKey.currentState.save();
 
     Navigator.of(context).pushNamed(TimerScreen.route,
         arguments:
-            Provider.of<TimerDetail>(context, listen: false).getTimerData());
+            Provider.of<TimerProvider>(context, listen: false).getTimerData());
   }
 
   void _showDialog() {
@@ -52,17 +62,9 @@ class _StartScreenState extends State<StartScreen> {
                 }),
             new FlatButton(
                 child: const Text('SAVE'),
-                onPressed: () async {
-                  setState(() {
-                    _isLoading = true;
-                  });
-                  var presetName = _textFieldController.text;
-                  await Provider.of<TimerDetail>(context, listen: false)
-                      .storeWorkOutInfo(presetName);
+                onPressed: ()  {
+                  addTimerDetail();
                   Navigator.of(ctx).pop();
-                  setState(() {
-                    _isLoading = false;
-                  });
                 }),
           ],
         ),
@@ -70,43 +72,22 @@ class _StartScreenState extends State<StartScreen> {
     );
   }
 
-  loadWorkoutList() async {
-    _workOutList = await await Provider.of<TimerDetail>(context, listen: false)
-        .getAllWorkOutInfo();
+  void addTimerDetail() {
+    _timerData = Provider.of<TimerProvider>(context, listen: false).getTimerData();
+
+    TimerDetailModel timerDetailModel = TimerDetailModel(
+      presetName: _textFieldController.text,
+      sets: _timerData['sets'],
+      restDuration: _timerData['rest'],
+      workDuration: _timerData['work'],
+    );
+
+    Provider.of<TimerProvider>(context, listen: false).addTimerDetail(timerDetailModel);
   }
 
   @override
   Widget build(BuildContext context) {
-    String presetName;
-    String sets;
-    String work;
-    String rest;
     const firstColor = Color(0xff5b86e5);
-
-    Map<String, String> timerData =
-        Provider.of<TimerDetail>(context, listen: false).getTimerData();
-
-    ///TODO YED
-    ///1. yukarıdaki timerdata almana gerek yok. eğer aşağıdaki loadWorkOutList Boş gelirse -> saved preset kısmında(ekranın en altı) veri gösterme
-    ///2.loadWorkOutList düzgün gelmiyor çünkü getAllWorkOutInfo for içerisindeki 2. awaitten dolayı veri dolmadan geçiyor. 2. await ekledim ama shopapp ve
-    ///internetten iç içe 2 tane await async nasıl yapılır bak
-    ///3.workoutlist düzgün çekildikten sonra onları listview builder ile göster. awaitten dolayı veriler çekilmediyse widget build etme. FutureBuilder bak.
-    ///Future builder olmazsa return Scaffold'un oraya if ler koy
-    ///4.listviewbuilder'daki her bir elemente gesturedetectr koy. eğer o tıklanırsa -> number pickerda o veriler setlensin.
-    ///5.her birine silme özelliği koy.
-    loadWorkoutList();
-
-    if (_workOutList.length > 0) {
-      presetName = _workOutList[0]['presetName'];
-      sets = _workOutList[0]['sets'];
-      work = _workOutList[0]['work'];
-      rest = _workOutList[0]['rest'];
-    } else {
-      presetName = timerData['presetName'];
-      sets = timerData['sets'];
-      work = timerData['work'];
-      rest = timerData['rest'];
-    }
 
     return Scaffold(
       body: new Material(
@@ -159,47 +140,69 @@ class _StartScreenState extends State<StartScreen> {
                           bgColor: Color(0XFFffffff)),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            text(
-                              presetName,
-                              textColor: Color(0XFF464545),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                text("Name"),
-                                text("_workOutList[i]['presetName']",
-                                    textColor: Color(0XFF313384)),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                text("Sets"),
-                                text("_workOutList[i]['sets']",
-                                    textColor: Color(0XFF313384)),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                text("Work"),
-                                text("_workOutList[i]['work']",
-                                    textColor: Color(0XFF313384)),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                text("Rest"),
-                                text("_workOutList[i]['rest']",
-                                    textColor: Color(0XFF313384)),
-                              ],
-                            ),
-                          ],
-                        ),
+                        child: (Provider.of<TimerProvider>(context)
+                                    .getTimerDetailLength() >
+                                0
+                            ? Consumer<TimerProvider>(
+                                builder: (context, timerDetails, child) =>
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                  itemCount:
+                                      timerDetails.getTimerDetailLength(),
+                                  itemBuilder: (_, i) => Column(
+                                    children: <Widget>[
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          text("Name"),
+                                          text(
+                                              timerDetails
+                                                  .timerDetails[i].presetName,
+                                              textColor: Color(0XFF313384)),
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          text("Sets"),
+                                          text(
+                                              timerDetails.timerDetails[i].sets,
+                                              textColor: Color(0XFF313384)),
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          text("Work"),
+                                          text(
+                                              timerDetails
+                                                  .timerDetails[i].workDuration,
+                                              textColor: Color(0XFF313384)),
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          text("Rest"),
+                                          text(
+                                              timerDetails
+                                                  .timerDetails[i].restDuration,
+                                              textColor: Color(0XFF313384)),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : Padding(
+                                padding: EdgeInsets.all(
+                                  18,
+                                ),
+                              )),
                       ),
                     ),
                   ],
