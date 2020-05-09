@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:sportstimer/models/timer_detail_model.dart';
 import 'package:sportstimer/providers/timer_detail_provider.dart';
 import 'package:sportstimer/screens/timer_screen.dart';
+import 'package:sportstimer/utils/number_picker_formatter.dart';
 import 'package:sportstimer/widgets/UtilityWidget.dart';
 import 'package:sportstimer/widgets/start_screen_item.dart';
 
@@ -14,14 +15,16 @@ class StartScreen extends StatefulWidget {
   _StartScreenState createState() => _StartScreenState();
 }
 
-class _StartScreenState extends State<StartScreen> {
+class _StartScreenState extends State<StartScreen>
+    with SingleTickerProviderStateMixin {
   TextEditingController _textFieldController = TextEditingController();
+  AnimationController controller;
   final _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
   String presetName;
   String sets = "3";
   String work = "0.3";
   String rest = "0.05";
+  List<TimerDetailModel> timerDetails = [];
   Map<String, String> _timerData = {
     'presetName': '',
     'sets': '',
@@ -37,43 +40,60 @@ class _StartScreenState extends State<StartScreen> {
             Provider.of<TimerProvider>(context, listen: false).getTimerData());
   }
 
-  void _showDialog() {
+  void _showDialog(Animation<double> offsetAnimation) {
     showDialog<String>(
       context: context,
       builder: (ctx) => new _SystemPadding(
-        child: new AlertDialog(
-          contentPadding: const EdgeInsets.all(16.0),
-          content: new Row(
-            children: <Widget>[
-              new Expanded(
-                child: new TextField(
-                  controller: _textFieldController,
-                  autofocus: true,
-                  decoration: new InputDecoration(labelText: 'Preset Name'),
+        child: AnimatedBuilder(
+            animation: offsetAnimation,
+            builder: (buildContext, child) {
+              return AlertDialog(
+                contentPadding: const EdgeInsets.all(16.0),
+                content: new Row(
+                  children: <Widget>[
+                    new Expanded(
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 24.0),
+                        padding: EdgeInsets.only(
+                            left: offsetAnimation.value + 24.0,
+                            right: 24.0 - offsetAnimation.value),
+                        child: new TextField(
+                          controller: _textFieldController,
+                          autofocus: true,
+                          decoration:
+                              new InputDecoration(labelText: 'Preset Name'),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            new FlatButton(
-                child: const Text('CANCEL'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                }),
-            new FlatButton(
-                child: const Text('SAVE'),
-                onPressed: ()  {
-                  addTimerDetail();
-                  Navigator.of(ctx).pop();
-                }),
-          ],
-        ),
+                actions: <Widget>[
+                  new FlatButton(
+                      child: const Text('CANCEL'),
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                      }),
+                  new FlatButton(
+                      child: const Text('SAVE'),
+                      onPressed: () {
+                        if (_textFieldController.value.text.isEmpty ||
+                            fetchNumberOfMatchingPresets(_textFieldController.text) > 0) {
+                          controller.forward(from: 0.0);
+                        } else {
+                          addTimerDetail();
+                          Navigator.of(ctx).pop();
+                        }
+                      }),
+                ],
+              );
+            }),
       ),
     );
   }
 
   void addTimerDetail() {
-    _timerData = Provider.of<TimerProvider>(context, listen: false).getTimerData();
+    _timerData =
+        Provider.of<TimerProvider>(context, listen: false).getTimerData();
 
     TimerDetailModel timerDetailModel = TimerDetailModel(
       presetName: _textFieldController.text,
@@ -82,12 +102,43 @@ class _StartScreenState extends State<StartScreen> {
       workDuration: _timerData['work'],
     );
 
-    Provider.of<TimerProvider>(context, listen: false).addTimerDetail(timerDetailModel);
+    Provider.of<TimerProvider>(context, listen: false)
+        .addTimerDetail(timerDetailModel);
+  }
+
+  int fetchNumberOfMatchingPresets(String presetName) {
+    timerDetails = Provider.of<TimerProvider>(context, listen: false).timerDetails;
+    return timerDetails
+        .where((timerDetail) => timerDetail.presetName == presetName)
+        .toList()
+        .length;
+  }
+
+  @override
+  void initState() {
+    controller = AnimationController(
+        duration: const Duration(milliseconds: 500), vsync: this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _textFieldController.dispose();
+    controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     const firstColor = Color(0xff5b86e5);
+    final Animation<double> offsetAnimation = Tween(begin: 0.0, end: 24.0)
+        .chain(CurveTween(curve: Curves.elasticIn))
+        .animate(controller)
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              controller.reverse();
+            }
+          });
 
     return Scaffold(
       body: new Material(
@@ -117,7 +168,7 @@ class _StartScreenState extends State<StartScreen> {
                         IconButton(
                           icon: Icon(Icons.save),
                           onPressed: () {
-                            _showDialog();
+                            _showDialog(offsetAnimation);
                           },
                         ),
                       ],
@@ -146,59 +197,75 @@ class _StartScreenState extends State<StartScreen> {
                             ? Consumer<TimerProvider>(
                                 builder: (context, timerDetails, child) =>
                                     ListView.builder(
-                                      shrinkWrap: true,
+                                  shrinkWrap: true,
                                   itemCount:
                                       timerDetails.getTimerDetailLength(),
-                                  itemBuilder: (_, i) => Column(
-                                    children: <Widget>[
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          text("Name"),
-                                          text(
-                                              timerDetails
-                                                  .timerDetails[i].presetName,
-                                              textColor: Color(0XFF313384)),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          text("Sets"),
-                                          text(
-                                              timerDetails.timerDetails[i].sets,
-                                              textColor: Color(0XFF313384)),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          text("Work"),
-                                          text(
-                                              timerDetails
-                                                  .timerDetails[i].workDuration,
-                                              textColor: Color(0XFF313384)),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          text("Rest"),
-                                          text(
-                                              timerDetails
-                                                  .timerDetails[i].restDuration,
-                                              textColor: Color(0XFF313384)),
-                                        ],
-                                      ),
-                                    ],
+                                  itemBuilder: (_, i) => Card(
+                                    elevation: 5,
+                                    child: Column(
+                                      children: <Widget>[
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            text("Name"),
+                                            text(
+                                                timerDetails
+                                                    .timerDetails[i].presetName,
+                                                textColor: Color(0XFF313384)),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            text("Sets"),
+                                            text(
+                                                timerDetails
+                                                    .timerDetails[i].sets,
+                                                textColor: Color(0XFF313384)),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            text("Work"),
+                                            text(
+                                                NumberPickerFormatter
+                                                            .formatTimeForSavedData(
+                                                                "work",
+                                                                timerDetails
+                                                                    .timerDetails[i])
+                                                        .toString() +
+                                                    " sec",
+                                                textColor: Color(0XFF313384)),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            text("Rest"),
+                                            text(
+                                                NumberPickerFormatter
+                                                            .formatTimeForSavedData(
+                                                                "rest",
+                                                                timerDetails
+                                                                    .timerDetails[i])
+                                                        .toString() +
+                                                    " sec",
+                                                textColor: Color(0XFF313384)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               )
-                            : Container(child: Text('No Presets are saved.'),)),
+                            : Container(
+                                child: Text('No Presets are saved.'),
+                              )),
                       ),
                     ),
                   ],

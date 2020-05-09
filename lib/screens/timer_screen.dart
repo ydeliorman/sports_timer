@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:sportstimer/utils/number_picker_formatter.dart';
 
 class TimerScreen extends StatefulWidget {
   static String route = '/TimerScreen';
@@ -82,30 +83,11 @@ class _TimerScreenState extends State<TimerScreen>
   }
 
   int get _workTime {
-    return _extractNumberPickerTime("work");
+    return NumberPickerFormatter.extractNumberPickerTime("work", _timerData);
   }
 
   int get _restTime {
-    return _extractNumberPickerTime("rest");
-  }
-
-  int _extractNumberPickerTime(String numberPickerType) {
-    int workDurationDecimalPart;
-
-    ///if the number is 0 18 -> workDurationInDecimal will be 0.18
-    var workDurationInDecimal = double.parse(_timerData[numberPickerType]);
-    int workDurationIntPart = workDurationInDecimal.toInt();
-
-    ///if the decimal part is divided by 10(length == 1), multiply by then the extracted decimal part
-    if (workDurationInDecimal.toString().split('.')[1].length == 1) {
-      workDurationDecimalPart =
-          int.tryParse(workDurationInDecimal.toString().split('.')[1]) * 10;
-    } else if (workDurationInDecimal.toString().split('.')[1].length == 2) {
-      workDurationDecimalPart =
-          int.tryParse(workDurationInDecimal.toString().split('.')[1]);
-    }
-
-    return 60 * workDurationIntPart + workDurationDecimalPart;
+    return NumberPickerFormatter.extractNumberPickerTime("rest", _timerData);
   }
 
   @override
