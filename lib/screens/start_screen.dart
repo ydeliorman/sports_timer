@@ -198,11 +198,7 @@ class _StartScreenState extends State<StartScreen> {
                                   ),
                                 ),
                               )
-                            : Padding(
-                                padding: EdgeInsets.all(
-                                  18,
-                                ),
-                              )),
+                            : Container(child: Text('No Presets are saved.'),)),
                       ),
                     ),
                   ],
