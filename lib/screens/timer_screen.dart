@@ -100,7 +100,6 @@ class _TimerScreenState extends State<TimerScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(
-              ///todo yed place remaining sets in a better place
               child: Text(_numberOfSets == 1
                   ? 'Last Set'
                   : 'Remaining Sets: $_numberOfSets'),

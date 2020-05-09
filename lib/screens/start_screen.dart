@@ -77,7 +77,9 @@ class _StartScreenState extends State<StartScreen>
                       child: const Text('SAVE'),
                       onPressed: () {
                         if (_textFieldController.value.text.isEmpty ||
-                            fetchNumberOfMatchingPresets(_textFieldController.text) > 0) {
+                            fetchNumberOfMatchingPresets(
+                                    _textFieldController.text) >
+                                0) {
                           controller.forward(from: 0.0);
                         } else {
                           addTimerDetail();
@@ -107,11 +109,21 @@ class _StartScreenState extends State<StartScreen>
   }
 
   int fetchNumberOfMatchingPresets(String presetName) {
-    timerDetails = Provider.of<TimerProvider>(context, listen: false).timerDetails;
+    fetchSavedData();
     return timerDetails
         .where((timerDetail) => timerDetail.presetName == presetName)
         .toList()
         .length;
+  }
+
+  void fetchSavedData() {
+    timerDetails =
+        Provider.of<TimerProvider>(context, listen: false).timerDetails;
+    if (timerDetails.length > 0) {
+      sets = timerDetails[0].sets;
+      work = timerDetails[0].workDuration;
+      rest = timerDetails[0].restDuration;
+    }
   }
 
   @override
@@ -139,6 +151,11 @@ class _StartScreenState extends State<StartScreen>
               controller.reverse();
             }
           });
+
+
+    ///TODO yed set init values of numberpickers to last saved preset
+    ///add total sec of work weekly graph
+//    fetchSavedData();
 
     return Scaffold(
       body: new Material(
@@ -197,6 +214,7 @@ class _StartScreenState extends State<StartScreen>
                             ? Consumer<TimerProvider>(
                                 builder: (context, timerDetails, child) =>
                                     ListView.builder(
+                                  reverse: true,
                                   shrinkWrap: true,
                                   itemCount:
                                       timerDetails.getTimerDetailLength(),
