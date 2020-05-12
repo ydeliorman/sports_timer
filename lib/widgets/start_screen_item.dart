@@ -4,14 +4,17 @@ import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
 import 'package:sportstimer/enums/StartScreenItemType.dart';
 import 'package:sportstimer/providers/timer_detail_provider.dart';
+import 'package:sportstimer/screens/start_screen.dart';
 
 class StartScreenItem extends StatefulWidget {
   final String title;
   String textFormFieldValue;
+  StartScreenState parent;
 
   StartScreenItem(
     this.title,
     this.textFormFieldValue,
+    this.parent,
   );
 
   @override
@@ -41,30 +44,45 @@ class _StartScreenItemState extends State<StartScreenItem> {
                       minValue: 1,
                       maxValue: 20,
                       infiniteLoop: true,
-                      onChanged: (value) => setState(() {
-                        widget.textFormFieldValue = value.toString();
-                        Provider.of<TimerProvider>(context, listen: false)
-                            .setTimerData(
-                                value.toString(), StartScreenItemType.Sets);
-                      }),
+                      onChanged: (value) {
+                        setState(() {
+                          widget.textFormFieldValue = value.toString();
+                          Provider.of<TimerProvider>(context, listen: false)
+                              .setTimerData(
+                                  value.toString(), StartScreenItemType.Sets);
+                        });
+                        widget.parent.setState(() {
+                          widget.parent.sets = value.toString();
+                        });
+                      },
                     )
                   : NumberPicker.decimal(
                       initialValue: double.parse(widget.textFormFieldValue),
                       minValue: 0,
                       maxValue: 15,
                       decimalPlaces: 2,
-                      onChanged: (value) => setState(
-                        () {
-                          widget.title == "WORK"
-                              ? Provider.of<TimerProvider>(context, listen: false)
-                                  .setTimerData(value.toString(),
-                                      StartScreenItemType.Work)
-                              : Provider.of<TimerProvider>(context, listen: false)
-                                  .setTimerData(value.toString(),
-                                      StartScreenItemType.Rest);
-                          widget.textFormFieldValue = value.toString();
-                        },
-                      ),
+                      onChanged: (value) {
+                        if (widget.title == "WORK") {
+                          setState(() {
+                            Provider.of<TimerProvider>(context, listen: false)
+                                .setTimerData(
+                                    value.toString(), StartScreenItemType.Work);
+                          });
+                          widget.parent.setState(() {
+                            widget.parent.work = value.toString();
+                          });
+                        } else {
+                          setState(() {
+                            Provider.of<TimerProvider>(context, listen: false)
+                                .setTimerData(
+                                    value.toString(), StartScreenItemType.Rest);
+                          });
+                          widget.parent.setState(() {
+                            widget.parent.rest = value.toString();
+                          });
+                        }
+                        widget.textFormFieldValue = value.toString();
+                      },
                     ),
             ),
           ],

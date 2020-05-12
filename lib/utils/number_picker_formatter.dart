@@ -2,11 +2,18 @@ import 'package:sportstimer/models/timer_detail_model.dart';
 
 class NumberPickerFormatter {
   static int extractNumberPickerTime(
-      String numberPickerType, Map<String, String> _timerData) {
+      String numberPickerType, TimerDetailModel timerDetailModel) {
     int workDurationDecimalPart;
 
     ///if the number is 0 18 -> workDurationInDecimal will be 0.18
-    var workDurationInDecimal = double.parse(_timerData[numberPickerType]);
+
+    var workDurationInDecimal;
+    if (numberPickerType == 'work') {
+      workDurationInDecimal = double.parse(timerDetailModel.workDuration);
+    } else {
+      workDurationInDecimal = double.parse(timerDetailModel.restDuration);
+    }
+
     int workDurationIntPart = workDurationInDecimal.toInt();
 
     ///if the decimal part is divided by 10(length == 1), multiply by then the extracted decimal part
@@ -59,7 +66,7 @@ class NumberPickerFormatter {
       decimalPart = workDurationInDecimal.toString().split('.')[1];
     }
 
-    intPart = workDurationInDecimal.toString().split('.')[0].padLeft(2,'0');
+    intPart = workDurationInDecimal.toString().split('.')[0].padLeft(2, '0');
 
     return [intPart, decimalPart];
   }

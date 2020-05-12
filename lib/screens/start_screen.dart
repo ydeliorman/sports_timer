@@ -5,16 +5,17 @@ import 'package:sportstimer/models/timer_detail_model.dart';
 import 'package:sportstimer/providers/timer_detail_provider.dart';
 import 'package:sportstimer/screens/timer_screen.dart';
 import 'package:sportstimer/utils/number_picker_formatter.dart';
+import 'package:sportstimer/widgets/expanded_section.dart';
 import 'package:sportstimer/widgets/start_screen_item.dart';
 
 class StartScreen extends StatefulWidget {
   static String route = '/StartScreen';
 
   @override
-  _StartScreenState createState() => _StartScreenState();
+  StartScreenState createState() => StartScreenState();
 }
 
-class _StartScreenState extends State<StartScreen>
+class StartScreenState extends State<StartScreen>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   String id;
@@ -22,15 +23,52 @@ class _StartScreenState extends State<StartScreen>
   String work = "0.3";
   String rest = "0.05";
   List<TimerDetailModel> timerDetails = [];
+  bool _isExpandedSets = false;
+  bool _isExpandedWork = false;
+  bool _isExpandedRest = false;
+
+  ///Expande or collapes while clicking between rest, work or sets
+  void _toggleExpand(int expandedItem) {
+    setState(() {
+      if (expandedItem == 1) {
+        _isExpandedSets = !_isExpandedSets;
+        if (_isExpandedWork) _isExpandedWork = !_isExpandedWork;
+        if (_isExpandedRest) _isExpandedRest = !_isExpandedRest;
+      } else if (expandedItem == 2) {
+        _isExpandedWork = !_isExpandedWork;
+        if (_isExpandedSets) _isExpandedSets = !_isExpandedSets;
+        if (_isExpandedRest) _isExpandedRest = !_isExpandedRest;
+      } else {
+        _isExpandedRest = !_isExpandedRest;
+        if (_isExpandedSets) _isExpandedSets = !_isExpandedSets;
+        if (_isExpandedWork) _isExpandedWork = !_isExpandedWork;
+      }
+    });
+  }
+
+  ///collapse all number pickers
+  void toggleOff() {
+    setState(() {
+      _isExpandedSets = false;
+      _isExpandedWork = false;
+      _isExpandedRest = false;
+    });
+  }
 
   void _startWorkout() {
     _formKey.currentState.save();
 
-    Navigator.of(context).pushNamed(TimerScreen.route,
-        arguments:
-            Provider.of<TimerProvider>(context, listen: false).getTimerData());
+    TimerDetailModel timerDetailModel = TimerDetailModel(
+      sets: sets,
+      restDuration: rest,
+      workDuration: work,
+    );
+
+    Navigator.of(context)
+        .pushNamed(TimerScreen.route, arguments: timerDetailModel);
   }
 
+  ///fetchSaved data from shared preferences at starting
   void fetchSavedData() {
     timerDetails =
         Provider.of<TimerProvider>(context, listen: true).timerDetails;
@@ -41,9 +79,9 @@ class _StartScreenState extends State<StartScreen>
     }
   }
 
+  ///adding timerDetail function
   void addTimerDetail() {
     int i = 1;
-
     TimerDetailModel timerDetailModel = TimerDetailModel(
       id: "Configuration $i/3",
       sets: sets,
@@ -53,7 +91,8 @@ class _StartScreenState extends State<StartScreen>
 
     i++;
 
-    Provider.of<TimerProvider>(context, listen: false).addTimerDetail(timerDetailModel);
+    Provider.of<TimerProvider>(context, listen: false)
+        .addTimerDetail(timerDetailModel);
   }
 
   @override
@@ -86,57 +125,87 @@ class _StartScreenState extends State<StartScreen>
                           Slider(textName: "Configuration 3/3"),
                         ],
                         onPageChanged: (index) {
-                          setState(() {
-                            sets = timerDetails[index].sets;
-                            work = timerDetails[index].workDuration;
-                            rest = timerDetails[index].restDuration;
-                          });
+                          setState(
+                            () {
+                              sets = timerDetails[index].sets;
+                              work = timerDetails[index].workDuration;
+                              rest = timerDetails[index].restDuration;
+                              toggleOff();
+                            },
+                          );
                         },
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Text('Sets'),
-                        Spacer(),
-                        Text(sets),
-                      ],
+                    InkWell(
+                      onTap: () {
+                        _toggleExpand(1);
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          Text('Sets'),
+                          Spacer(),
+                          Text(sets),
+                        ],
+                      ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Text('Work'),
-                        Spacer(),
-                        Text(NumberPickerFormatter.gatherTimeForRichText(
-                                work)[0] +
-                            ":" +
-                            NumberPickerFormatter.gatherTimeForRichText(
-                                work)[1]),
-                      ],
+                    InkWell(
+                      onTap: () {
+                        _toggleExpand(2);
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          Text('Work'),
+                          Spacer(),
+                          Text(NumberPickerFormatter.gatherTimeForRichText(
+                                  work)[0] +
+                              ":" +
+                              NumberPickerFormatter.gatherTimeForRichText(
+                                  work)[1]),
+                        ],
+                      ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Text('Rest'),
-                        Spacer(),
-                        Text(NumberPickerFormatter.gatherTimeForRichText(
-                                rest)[0] +
-                            ":" +
-                            NumberPickerFormatter.gatherTimeForRichText(
-                                rest)[1]),
-                      ],
+                    InkWell(
+                      onTap: () {
+                        _toggleExpand(3);
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          Text('Rest'),
+                          Spacer(),
+                          Text(NumberPickerFormatter.gatherTimeForRichText(
+                                  rest)[0] +
+                              ":" +
+                              NumberPickerFormatter.gatherTimeForRichText(
+                                  rest)[1]),
+                        ],
+                      ),
                     ),
-                    StartScreenItem(
-                      "SETS",
-                      sets,
+                    ExpandedSection(
+                      expand: _isExpandedSets,
+                      child: StartScreenItem(
+                        "SETS",
+                        sets,
+                        this,
+                      ),
                     ),
-                    StartScreenItem(
-                      "WORK",
-                      work,
+                    ExpandedSection(
+                      expand: _isExpandedWork,
+                      child: StartScreenItem(
+                        "WORK",
+                        work,
+                        this,
+                      ),
                     ),
-                    StartScreenItem(
-                      "REST",
-                      rest,
+                    ExpandedSection(
+                      expand: _isExpandedRest,
+                      child: StartScreenItem(
+                        "REST",
+                        rest,
+                        this,
+                      ),
                     ),
                     const Divider(),
                     NiceButton(
@@ -148,7 +217,6 @@ class _StartScreenState extends State<StartScreen>
                       icon: Icons.accessibility,
                       onPressed: _startWorkout,
                     ),
-                    FloatingActionButton(onPressed: addTimerDetail,)
                   ],
                 ),
               ),

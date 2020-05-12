@@ -1,10 +1,12 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:sportstimer/models/timer_detail_model.dart';
 import 'package:sportstimer/utils/number_picker_formatter.dart';
 
 class TimerScreen extends StatefulWidget {
   static String route = '/TimerScreen';
+
 
   @override
   _TimerScreenState createState() => _TimerScreenState();
@@ -13,12 +15,7 @@ class TimerScreen extends StatefulWidget {
 class _TimerScreenState extends State<TimerScreen>
     with TickerProviderStateMixin {
   AnimationController _controller;
-  Map<String, String> _timerData = {
-    'id': '',
-    'sets': '',
-    'work': '',
-    'rest': '',
-  };
+  TimerDetailModel timerDetailModel;
 
   int _numberOfSets;
   bool isWorkMode = true;
@@ -56,13 +53,13 @@ class _TimerScreenState extends State<TimerScreen>
 
   @override
   void didChangeDependencies() {
-    _timerData =
-        ModalRoute.of(context).settings.arguments as Map<String, String>;
-    if (_timerData == null) {
+    timerDetailModel =
+        ModalRoute.of(context).settings.arguments as TimerDetailModel;
+    if (timerDetailModel == null) {
       return;
     }
 
-    _numberOfSets = int.parse(_timerData['sets']);
+    _numberOfSets = int.parse(timerDetailModel.sets);
     _controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: _workTime),
@@ -83,11 +80,11 @@ class _TimerScreenState extends State<TimerScreen>
   }
 
   int get _workTime {
-    return NumberPickerFormatter.extractNumberPickerTime("work", _timerData);
+    return NumberPickerFormatter.extractNumberPickerTime("work", timerDetailModel);
   }
 
   int get _restTime {
-    return NumberPickerFormatter.extractNumberPickerTime("rest", _timerData);
+    return NumberPickerFormatter.extractNumberPickerTime("rest", timerDetailModel);
   }
 
   @override
@@ -132,7 +129,7 @@ class _TimerScreenState extends State<TimerScreen>
                           children: <Widget>[
                             Text(
                               isWorkMode ? 'Work' : 'Rest',
-                              style: themeData.textTheme.subhead,
+                              style: themeData.textTheme.subtitle1,
                             ),
                             AnimatedBuilder(
                                 animation: _controller,
