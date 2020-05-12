@@ -1,21 +1,21 @@
 class TimerDetailModel {
-  String presetName;
+  String id;
   String sets;
   String workDuration;
   String restDuration;
 
   TimerDetailModel(
-      {this.presetName, this.sets, this.workDuration, this.restDuration});
+      {this.id, this.sets, this.workDuration, this.restDuration});
 
   Map toJson() => {
-        'presetName': presetName,
+        'id': id,
         'sets': sets,
         'workDuration': workDuration,
         'restDuration': restDuration,
       };
 
   TimerDetailModel.fromJson(Map json)
-      : presetName = json['presetName'],
+      : id = json['id'],
         sets = json['sets'],
         workDuration = json['workDuration'],
         restDuration = json['restDuration'];

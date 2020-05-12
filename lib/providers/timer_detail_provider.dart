@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -8,7 +7,7 @@ import 'package:sportstimer/models/timer_detail_model.dart';
 
 class TimerProvider with ChangeNotifier {
   List<TimerDetailModel> timerDetails = [];
-  static var presetName = "";
+  static var id = "";
   static var sets = "3";
   static var workDuration = "0.3";
   static var restDuration = "0.05";
@@ -17,8 +16,7 @@ class TimerProvider with ChangeNotifier {
     initialState();
   }
 
-  List<TimerDetailModel> get allTimerDetails =>
-      timerDetails;
+  List<TimerDetailModel> get allTimerDetails => timerDetails;
 
   void initialState() {
     syncDataWithProvider();
@@ -34,7 +32,7 @@ class TimerProvider with ChangeNotifier {
 
   Map<String, String> getTimerData() {
     return {
-      'presetName': presetName,
+      'id': id,
       'sets': sets,
       'work': workDuration,
       'rest': restDuration,
@@ -52,7 +50,7 @@ class TimerProvider with ChangeNotifier {
   }
 
   void removeTimerDetail(TimerDetailModel _timerDetail) {
-    timerDetails.removeWhere((timerDetail) => timerDetail.presetName == _timerDetail.presetName);
+//    timerDetails.removeWhere((timerDetail) => timerDetail.presetName == _timerDetail.presetName);
 
     updateSharedPreferences();
 
@@ -78,8 +76,35 @@ class TimerProvider with ChangeNotifier {
     if (result != null) {
       timerDetails =
           result.map((f) => TimerDetailModel.fromJson(json.decode(f))).toList();
+    } else {
+      initTimerDetailForFirstTime();
     }
 
     notifyListeners();
+  }
+
+  void initTimerDetailForFirstTime() {
+    TimerDetailModel timerDetailModel1 = TimerDetailModel(
+      id: "Configuration 1/3",
+      sets: "3",
+      workDuration: "0.3",
+      restDuration: "0.05",
+    );
+    TimerDetailModel timerDetailModel2 = TimerDetailModel(
+      id: "Configuration 2/3",
+      sets: "5",
+      workDuration: "0.4",
+      restDuration: "0.1",
+    );
+    TimerDetailModel timerDetailModel3 = TimerDetailModel(
+      id: "Configuration 3/3",
+      sets: "7",
+      workDuration: "0.5",
+      restDuration: "0.15",
+    );
+
+    addTimerDetail(timerDetailModel1);
+    addTimerDetail(timerDetailModel2);
+    addTimerDetail(timerDetailModel3);
   }
 }

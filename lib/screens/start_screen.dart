@@ -5,7 +5,6 @@ import 'package:sportstimer/models/timer_detail_model.dart';
 import 'package:sportstimer/providers/timer_detail_provider.dart';
 import 'package:sportstimer/screens/timer_screen.dart';
 import 'package:sportstimer/utils/number_picker_formatter.dart';
-import 'package:sportstimer/widgets/UtilityWidget.dart';
 import 'package:sportstimer/widgets/start_screen_item.dart';
 
 class StartScreen extends StatefulWidget {
@@ -17,20 +16,12 @@ class StartScreen extends StatefulWidget {
 
 class _StartScreenState extends State<StartScreen>
     with SingleTickerProviderStateMixin {
-  TextEditingController _textFieldController = TextEditingController();
-  AnimationController controller;
   final _formKey = GlobalKey<FormState>();
-  String presetName;
+  String id;
   String sets = "3";
   String work = "0.3";
   String rest = "0.05";
   List<TimerDetailModel> timerDetails = [];
-  Map<String, String> _timerData = {
-    'presetName': '',
-    'sets': '',
-    'work': '',
-    'rest': '',
-  };
 
   void _startWorkout() {
     _formKey.currentState.save();
@@ -40,85 +31,9 @@ class _StartScreenState extends State<StartScreen>
             Provider.of<TimerProvider>(context, listen: false).getTimerData());
   }
 
-  void _showDialog(Animation<double> offsetAnimation) {
-    showDialog<String>(
-      context: context,
-      builder: (ctx) => new _SystemPadding(
-        child: AnimatedBuilder(
-            animation: offsetAnimation,
-            builder: (buildContext, child) {
-              return AlertDialog(
-                contentPadding: const EdgeInsets.all(16.0),
-                content: new Row(
-                  children: <Widget>[
-                    new Expanded(
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 24.0),
-                        padding: EdgeInsets.only(
-                            left: offsetAnimation.value + 24.0,
-                            right: 24.0 - offsetAnimation.value),
-                        child: new TextField(
-                          controller: _textFieldController,
-                          autofocus: true,
-                          decoration:
-                              new InputDecoration(labelText: 'Preset Name'),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                actions: <Widget>[
-                  new FlatButton(
-                      child: const Text('CANCEL'),
-                      onPressed: () {
-                        Navigator.of(ctx).pop();
-                      }),
-                  new FlatButton(
-                      child: const Text('SAVE'),
-                      onPressed: () {
-                        if (_textFieldController.value.text.isEmpty ||
-                            fetchNumberOfMatchingPresets(
-                                    _textFieldController.text) >
-                                0) {
-                          controller.forward(from: 0.0);
-                        } else {
-                          addTimerDetail();
-                          Navigator.of(ctx).pop();
-                        }
-                      }),
-                ],
-              );
-            }),
-      ),
-    );
-  }
-
-  void addTimerDetail() {
-    _timerData =
-        Provider.of<TimerProvider>(context, listen: false).getTimerData();
-
-    TimerDetailModel timerDetailModel = TimerDetailModel(
-      presetName: _textFieldController.text,
-      sets: _timerData['sets'],
-      restDuration: _timerData['rest'],
-      workDuration: _timerData['work'],
-    );
-
-    Provider.of<TimerProvider>(context, listen: false)
-        .addTimerDetail(timerDetailModel);
-  }
-
-  int fetchNumberOfMatchingPresets(String presetName) {
-    fetchSavedData();
-    return timerDetails
-        .where((timerDetail) => timerDetail.presetName == presetName)
-        .toList()
-        .length;
-  }
-
   void fetchSavedData() {
     timerDetails =
-        Provider.of<TimerProvider>(context, listen: false).timerDetails;
+        Provider.of<TimerProvider>(context, listen: true).timerDetails;
     if (timerDetails.length > 0) {
       sets = timerDetails[0].sets;
       work = timerDetails[0].workDuration;
@@ -126,39 +41,33 @@ class _StartScreenState extends State<StartScreen>
     }
   }
 
-  @override
-  void initState() {
-    controller = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
-    super.initState();
+  void addTimerDetail() {
+    int i = 1;
+
+    TimerDetailModel timerDetailModel = TimerDetailModel(
+      id: "Configuration $i/3",
+      sets: sets,
+      restDuration: rest,
+      workDuration: work,
+    );
+
+    i++;
+
+    Provider.of<TimerProvider>(context, listen: false).addTimerDetail(timerDetailModel);
   }
 
   @override
-  void dispose() {
-    _textFieldController.dispose();
-    controller.dispose();
-    super.dispose();
+  void didChangeDependencies() {
+    fetchSavedData();
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
     const firstColor = Color(0xff5b86e5);
-    final Animation<double> offsetAnimation = Tween(begin: 0.0, end: 24.0)
-        .chain(CurveTween(curve: Curves.elasticIn))
-        .animate(controller)
-          ..addStatusListener((status) {
-            if (status == AnimationStatus.completed) {
-              controller.reverse();
-            }
-          });
-
-
-    ///TODO yed set init values of numberpickers to last saved preset
-    ///add total sec of work weekly graph
-//    fetchSavedData();
 
     return Scaffold(
-      body: new Material(
+      body: new SafeArea(
         child: new Center(
           child: Padding(
             padding: const EdgeInsets.all(30.0),
@@ -167,6 +76,56 @@ class _StartScreenState extends State<StartScreen>
               child: SingleChildScrollView(
                 child: Column(
                   children: <Widget>[
+                    Container(
+                      width: double.infinity,
+                      height: 50,
+                      child: PageView(
+                        children: <Widget>[
+                          Slider(textName: "Configuration 1/3"),
+                          Slider(textName: "Configuration 2/3"),
+                          Slider(textName: "Configuration 3/3"),
+                        ],
+                        onPageChanged: (index) {
+                          setState(() {
+                            sets = timerDetails[index].sets;
+                            work = timerDetails[index].workDuration;
+                            rest = timerDetails[index].restDuration;
+                          });
+                        },
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Text('Sets'),
+                        Spacer(),
+                        Text(sets),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Text('Work'),
+                        Spacer(),
+                        Text(NumberPickerFormatter.gatherTimeForRichText(
+                                work)[0] +
+                            ":" +
+                            NumberPickerFormatter.gatherTimeForRichText(
+                                work)[1]),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Text('Rest'),
+                        Spacer(),
+                        Text(NumberPickerFormatter.gatherTimeForRichText(
+                                rest)[0] +
+                            ":" +
+                            NumberPickerFormatter.gatherTimeForRichText(
+                                rest)[1]),
+                      ],
+                    ),
                     StartScreenItem(
                       "SETS",
                       sets,
@@ -179,17 +138,6 @@ class _StartScreenState extends State<StartScreen>
                       "REST",
                       rest,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.save),
-                          onPressed: () {
-                            _showDialog(offsetAnimation);
-                          },
-                        ),
-                      ],
-                    ),
                     const Divider(),
                     NiceButton(
                       width: 255,
@@ -200,92 +148,7 @@ class _StartScreenState extends State<StartScreen>
                       icon: Icons.accessibility,
                       onPressed: _startWorkout,
                     ),
-                    Container(
-                      margin: EdgeInsets.only(left: 16, top: 16, right: 16),
-                      decoration: boxDecoration(
-                          radius: 16,
-                          showShadow: true,
-                          bgColor: Color(0XFFffffff)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: (Provider.of<TimerProvider>(context)
-                                    .getTimerDetailLength() >
-                                0
-                            ? Consumer<TimerProvider>(
-                                builder: (context, timerDetails, child) =>
-                                    ListView.builder(
-                                  reverse: true,
-                                  shrinkWrap: true,
-                                  itemCount:
-                                      timerDetails.getTimerDetailLength(),
-                                  itemBuilder: (_, i) => Card(
-                                    elevation: 5,
-                                    child: Column(
-                                      children: <Widget>[
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            text("Name"),
-                                            text(
-                                                timerDetails
-                                                    .timerDetails[i].presetName,
-                                                textColor: Color(0XFF313384)),
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            text("Sets"),
-                                            text(
-                                                timerDetails
-                                                    .timerDetails[i].sets,
-                                                textColor: Color(0XFF313384)),
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            text("Work"),
-                                            text(
-                                                NumberPickerFormatter
-                                                            .formatTimeForSavedData(
-                                                                "work",
-                                                                timerDetails
-                                                                    .timerDetails[i])
-                                                        .toString() +
-                                                    " sec",
-                                                textColor: Color(0XFF313384)),
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            text("Rest"),
-                                            text(
-                                                NumberPickerFormatter
-                                                            .formatTimeForSavedData(
-                                                                "rest",
-                                                                timerDetails
-                                                                    .timerDetails[i])
-                                                        .toString() +
-                                                    " sec",
-                                                textColor: Color(0XFF313384)),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : Container(
-                                child: Text('No Presets are saved.'),
-                              )),
-                      ),
-                    ),
+                    FloatingActionButton(onPressed: addTimerDetail,)
                   ],
                 ),
               ),
@@ -297,17 +160,21 @@ class _StartScreenState extends State<StartScreen>
   }
 }
 
-class _SystemPadding extends StatelessWidget {
-  final Widget child;
+class Slider extends StatelessWidget {
+  final String textName;
 
-  _SystemPadding({Key key, this.child}) : super(key: key);
+  Slider({Key key, @required this.textName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var mediaQuery = MediaQuery.of(context);
-    return new AnimatedContainer(
-        padding: mediaQuery.viewInsets,
-        duration: const Duration(milliseconds: 300),
-        child: child);
+    return Container(
+        alignment: Alignment.center,
+        height: 50,
+        width: double.infinity,
+        padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+        child: Text(
+          textName,
+          style: TextStyle(color: Colors.grey),
+        ));
   }
 }
