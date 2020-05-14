@@ -138,9 +138,21 @@ class StartScreenState extends State<StartScreen>
                       child: PageView(
                         controller: _pageController,
                         children: <Widget>[
-                          Slider(textName: "Configuration 1/3"),
-                          Slider(textName: "Configuration 2/3"),
-                          Slider(textName: "Configuration 3/3"),
+                          Text(
+                            "Configuration 1/3",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 25),
+                          ),
+                          Text(
+                            "Configuration 2/3",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 25)
+                          ),
+                          Text(
+                            "Configuration 3/3",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 25),
+                          ),
                         ],
                         onPageChanged: (index) {
                           setState(
@@ -168,9 +180,9 @@ class StartScreenState extends State<StartScreen>
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
-                          Text('Sets'),
+                          Text('Sets', style: TextStyle(fontSize: 25),),
                           Spacer(),
-                          Text(sets),
+                          Text(sets, style: TextStyle(fontSize: 25),),
                         ],
                       ),
                     ),
@@ -181,13 +193,13 @@ class StartScreenState extends State<StartScreen>
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
-                          Text('Work'),
+                          Text('Work', style: TextStyle(fontSize: 25),),
                           Spacer(),
                           Text(NumberPickerFormatter.gatherTimeForRichText(
                                   work)[0] +
                               ":" +
                               NumberPickerFormatter.gatherTimeForRichText(
-                                  work)[1]),
+                                  work)[1], style: TextStyle(fontSize: 25),),
                         ],
                       ),
                     ),
@@ -198,13 +210,13 @@ class StartScreenState extends State<StartScreen>
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
-                          Text('Rest'),
+                          Text('Rest', style: TextStyle(fontSize: 25),),
                           Spacer(),
                           Text(NumberPickerFormatter.gatherTimeForRichText(
                                   rest)[0] +
                               ":" +
                               NumberPickerFormatter.gatherTimeForRichText(
-                                  rest)[1]),
+                                  rest)[1], style: TextStyle(fontSize: 25),),
                         ],
                       ),
                     ),
