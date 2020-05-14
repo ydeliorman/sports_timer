@@ -49,8 +49,8 @@ class TimerProvider with ChangeNotifier {
     }
   }
 
-  void removeTimerDetail(TimerDetailModel _timerDetail) {
-//    timerDetails.removeWhere((timerDetail) => timerDetail.presetName == _timerDetail.presetName);
+  void removeTimerDetail(String id) {
+    timerDetails.removeWhere((timerDetail) => timerDetail.id == id);
 
     updateSharedPreferences();
 
@@ -85,19 +85,19 @@ class TimerProvider with ChangeNotifier {
 
   void initTimerDetailForFirstTime() {
     TimerDetailModel timerDetailModel1 = TimerDetailModel(
-      id: "Configuration 1/3",
+      id: "1",
       sets: "3",
       workDuration: "0.3",
       restDuration: "0.05",
     );
     TimerDetailModel timerDetailModel2 = TimerDetailModel(
-      id: "Configuration 2/3",
+      id: "2",
       sets: "5",
       workDuration: "0.4",
       restDuration: "0.1",
     );
     TimerDetailModel timerDetailModel3 = TimerDetailModel(
-      id: "Configuration 3/3",
+      id: "3",
       sets: "7",
       workDuration: "0.5",
       restDuration: "0.15",

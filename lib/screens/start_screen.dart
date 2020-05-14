@@ -26,6 +26,7 @@ class StartScreenState extends State<StartScreen>
   bool _isExpandedSets = false;
   bool _isExpandedWork = false;
   bool _isExpandedRest = false;
+  PageController _pageController = PageController();
 
   ///Expande or collapes while clicking between rest, work or sets
   void _toggleExpand(int expandedItem) {
@@ -55,10 +56,11 @@ class StartScreenState extends State<StartScreen>
     });
   }
 
-  void _startWorkout() {
+  void _startWorkout(String id) {
     _formKey.currentState.save();
 
     TimerDetailModel timerDetailModel = TimerDetailModel(
+      id: id,
       sets: sets,
       restDuration: rest,
       workDuration: work,
@@ -66,6 +68,15 @@ class StartScreenState extends State<StartScreen>
 
     Navigator.of(context)
         .pushNamed(TimerScreen.route, arguments: timerDetailModel);
+
+    ///remove the current modified one for update
+    Provider.of<TimerProvider>(context, listen: false).removeTimerDetail(id);
+
+    ///add the modified one
+    Provider.of<TimerProvider>(context, listen: false)
+        .addTimerDetail(timerDetailModel);
+
+    _pageController.jumpToPage(0);
   }
 
   ///fetchSaved data from shared preferences at starting
@@ -102,6 +113,11 @@ class StartScreenState extends State<StartScreen>
   }
 
   @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
     const firstColor = Color(0xff5b86e5);
 
@@ -119,6 +135,7 @@ class StartScreenState extends State<StartScreen>
                       width: double.infinity,
                       height: 50,
                       child: PageView(
+                        controller: _pageController,
                         children: <Widget>[
                           Slider(textName: "Configuration 1/3"),
                           Slider(textName: "Configuration 2/3"),
@@ -127,9 +144,15 @@ class StartScreenState extends State<StartScreen>
                         onPageChanged: (index) {
                           setState(
                             () {
-                              sets = timerDetails[index].sets;
-                              work = timerDetails[index].workDuration;
-                              rest = timerDetails[index].restDuration;
+                              TimerDetailModel timerDetail = timerDetails
+                                  .where((timerDetail) =>
+                                      timerDetail.id == "${index + 1}")
+                                  .first;
+                              timerDetail == null ? timerDetail = timerDetails[index] : _ ;
+                              id = "${index + 1}";
+                              sets = timerDetail.sets;
+                              work = timerDetail.workDuration;
+                              rest = timerDetail.restDuration;
                               toggleOff();
                             },
                           );
@@ -215,7 +238,7 @@ class StartScreenState extends State<StartScreen>
                       text: "Start",
                       background: firstColor,
                       icon: Icons.accessibility,
-                      onPressed: _startWorkout,
+                      onPressed: () => _startWorkout(id),
                     ),
                   ],
                 ),
