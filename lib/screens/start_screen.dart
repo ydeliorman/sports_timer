@@ -117,6 +117,7 @@ class StartScreenState extends State<StartScreen>
     _pageController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     const firstColor = Color(0xff5b86e5);
@@ -148,7 +149,8 @@ class StartScreenState extends State<StartScreen>
                                   .where((timerDetail) =>
                                       timerDetail.id == "${index + 1}")
                                   .first;
-                              timerDetail == null ? timerDetail = timerDetails[index] : _ ;
+                              if (timerDetail == null)
+                                timerDetail = timerDetails[index];
                               id = "${index + 1}";
                               sets = timerDetail.sets;
                               work = timerDetail.workDuration;
