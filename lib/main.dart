@@ -38,7 +38,7 @@ class MyAppState extends State<MyApp> {
           primarySwatch: Colors.purple,
           accentColor: Colors.deepOrange,
           fontFamily: 'Lato',
-          textTheme: GoogleFonts.latoTextTheme(),
+          textTheme: GoogleFonts.ptSansTextTheme(),
         ),
         home: StartScreen(),
         routes: {

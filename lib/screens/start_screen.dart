@@ -5,6 +5,7 @@ import 'package:sportstimer/models/timer_detail_model.dart';
 import 'package:sportstimer/providers/timer_detail_provider.dart';
 import 'package:sportstimer/screens/timer_screen.dart';
 import 'package:sportstimer/utils/number_picker_formatter.dart';
+import 'package:sportstimer/widgets/animated_button.dart';
 import 'package:sportstimer/widgets/expanded_section.dart';
 import 'package:sportstimer/widgets/start_screen_item.dart';
 
@@ -254,6 +255,7 @@ class StartScreenState extends State<StartScreen>
                       icon: Icons.accessibility,
                       onPressed: () => _startWorkout(id),
                     ),
+                  AnimatedButton(onPressed: () => _startWorkout(id))
                   ],
                 ),
               ),
