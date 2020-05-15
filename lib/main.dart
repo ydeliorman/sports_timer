@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:sportstimer/providers/timer_detail_provider.dart';
 import 'package:sportstimer/screens/start_screen.dart';
@@ -37,6 +38,7 @@ class MyAppState extends State<MyApp> {
           primarySwatch: Colors.purple,
           accentColor: Colors.deepOrange,
           fontFamily: 'Lato',
+          textTheme: GoogleFonts.latoTextTheme(),
         ),
         home: StartScreen(),
         routes: {
