@@ -6,6 +6,7 @@ import 'package:sportstimer/providers/timer_detail_provider.dart';
 import 'package:sportstimer/screens/timer_screen.dart';
 import 'package:sportstimer/utils/number_picker_formatter.dart';
 import 'package:sportstimer/widgets/animated_button.dart';
+import 'package:sportstimer/widgets/custom_calendar.dart';
 import 'package:sportstimer/widgets/expanded_section.dart';
 import 'package:sportstimer/widgets/start_screen_item.dart';
 
@@ -125,139 +126,152 @@ class StartScreenState extends State<StartScreen>
 
     return Scaffold(
       body: new SafeArea(
-        child: new Center(
-          child: Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      width: double.infinity,
-                      height: 50,
-                      child: PageView(
-                        controller: _pageController,
-                        children: <Widget>[
-                          Text(
-                            "Configuration 1/3",
+        child: Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  CustomCalendar(),
+                  Container(
+                    width: double.infinity,
+                    height: 50,
+                    child: PageView(
+                      controller: _pageController,
+                      children: <Widget>[
+                        Text(
+                          "Configuration 1/3",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 25),
+                        ),
+                        Text("Configuration 2/3",
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 25),
-                          ),
-                          Text(
-                            "Configuration 2/3",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 25)
-                          ),
-                          Text(
-                            "Configuration 3/3",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 25),
-                          ),
-                        ],
-                        onPageChanged: (index) {
-                          setState(
-                            () {
-                              TimerDetailModel timerDetail = timerDetails
-                                  .where((timerDetail) =>
-                                      timerDetail.id == "${index + 1}")
-                                  .first;
-                              if (timerDetail == null)
-                                timerDetail = timerDetails[index];
-                              id = "${index + 1}";
-                              sets = timerDetail.sets;
-                              work = timerDetail.workDuration;
-                              rest = timerDetail.restDuration;
-                              toggleOff();
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        _toggleExpand(1);
+                            style: TextStyle(fontSize: 25)),
+                        Text(
+                          "Configuration 3/3",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 25),
+                        ),
+                      ],
+                      onPageChanged: (index) {
+                        setState(
+                          () {
+                            TimerDetailModel timerDetail = timerDetails
+                                .where((timerDetail) =>
+                                    timerDetail.id == "${index + 1}")
+                                .first;
+                            if (timerDetail == null)
+                              timerDetail = timerDetails[index];
+                            id = "${index + 1}";
+                            sets = timerDetail.sets;
+                            work = timerDetail.workDuration;
+                            rest = timerDetail.restDuration;
+                            toggleOff();
+                          },
+                        );
                       },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          Text('Sets', style: TextStyle(fontSize: 25),),
-                          Spacer(),
-                          Text(sets, style: TextStyle(fontSize: 25),),
-                        ],
-                      ),
                     ),
-                    InkWell(
-                      onTap: () {
-                        _toggleExpand(2);
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          Text('Work', style: TextStyle(fontSize: 25),),
-                          Spacer(),
-                          Text(NumberPickerFormatter.gatherTimeForRichText(
-                                  work)[0] +
+                  ),
+                  InkWell(
+                    onTap: () {
+                      _toggleExpand(1);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Text(
+                          'Sets',
+                          style: TextStyle(fontSize: 25),
+                        ),
+                        Spacer(),
+                        Text(
+                          sets,
+                          style: TextStyle(fontSize: 25),
+                        ),
+                      ],
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      _toggleExpand(2);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Text(
+                          'Work',
+                          style: TextStyle(fontSize: 25),
+                        ),
+                        Spacer(),
+                        Text(
+                          NumberPickerFormatter.gatherTimeForRichText(work)[0] +
                               ":" +
                               NumberPickerFormatter.gatherTimeForRichText(
-                                  work)[1], style: TextStyle(fontSize: 25),),
-                        ],
-                      ),
+                                  work)[1],
+                          style: TextStyle(fontSize: 25),
+                        ),
+                      ],
                     ),
-                    InkWell(
-                      onTap: () {
-                        _toggleExpand(3);
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          Text('Rest', style: TextStyle(fontSize: 25),),
-                          Spacer(),
-                          Text(NumberPickerFormatter.gatherTimeForRichText(
-                                  rest)[0] +
+                  ),
+                  InkWell(
+                    onTap: () {
+                      _toggleExpand(3);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Text(
+                          'Rest',
+                          style: TextStyle(fontSize: 25),
+                        ),
+                        Spacer(),
+                        Text(
+                          NumberPickerFormatter.gatherTimeForRichText(rest)[0] +
                               ":" +
                               NumberPickerFormatter.gatherTimeForRichText(
-                                  rest)[1], style: TextStyle(fontSize: 25),),
-                        ],
-                      ),
+                                  rest)[1],
+                          style: TextStyle(fontSize: 25),
+                        ),
+                      ],
                     ),
-                    ExpandedSection(
-                      expand: _isExpandedSets,
-                      child: StartScreenItem(
-                        "SETS",
-                        sets,
-                        this,
-                      ),
+                  ),
+                  ExpandedSection(
+                    expand: _isExpandedSets,
+                    child: StartScreenItem(
+                      "SETS",
+                      sets,
+                      this,
                     ),
-                    ExpandedSection(
-                      expand: _isExpandedWork,
-                      child: StartScreenItem(
-                        "WORK",
-                        work,
-                        this,
-                      ),
+                  ),
+                  ExpandedSection(
+                    expand: _isExpandedWork,
+                    child: StartScreenItem(
+                      "WORK",
+                      work,
+                      this,
                     ),
-                    ExpandedSection(
-                      expand: _isExpandedRest,
-                      child: StartScreenItem(
-                        "REST",
-                        rest,
-                        this,
-                      ),
+                  ),
+                  ExpandedSection(
+                    expand: _isExpandedRest,
+                    child: StartScreenItem(
+                      "REST",
+                      rest,
+                      this,
                     ),
-                    const Divider(),
-                    NiceButton(
-                      width: 255,
-                      elevation: 8.0,
-                      radius: 52.0,
-                      text: "Start",
-                      background: firstColor,
-                      icon: Icons.accessibility,
-                      onPressed: () => _startWorkout(id),
-                    ),
+                  ),
+                  const Divider(),
+                  NiceButton(
+                    width: 255,
+                    elevation: 8.0,
+                    radius: 52.0,
+                    text: "Start",
+                    background: firstColor,
+                    icon: Icons.accessibility,
+                    onPressed: () => _startWorkout(id),
+                  ),
                   AnimatedButton(onPressed: () => _startWorkout(id))
-                  ],
-                ),
+                ],
               ),
             ),
           ),
