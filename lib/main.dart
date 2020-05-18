@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:sportstimer/providers/timer_detail_provider.dart';
+import 'package:sportstimer/providers/workout_time_provider.dart';
 import 'package:sportstimer/screens/start_screen.dart';
 import 'package:sportstimer/screens/timer_screen.dart';
 
@@ -30,6 +31,9 @@ class MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider.value(
           value: TimerProvider(),
+        ),
+        ChangeNotifierProvider.value(
+          value: WorkoutProvider(),
         ),
       ],
       child: MaterialApp(

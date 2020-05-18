@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:nice_button/nice_button.dart';
 import 'package:provider/provider.dart';
 import 'package:sportstimer/models/timer_detail_model.dart';
+import 'package:sportstimer/models/workout_time_model.dart';
 import 'package:sportstimer/providers/timer_detail_provider.dart';
+import 'package:sportstimer/providers/workout_time_provider.dart';
 import 'package:sportstimer/screens/timer_screen.dart';
 import 'package:sportstimer/utils/number_picker_formatter.dart';
-import 'package:sportstimer/widgets/animated_button.dart';
+import 'package:sportstimer/widgets/barchart.dart';
 import 'package:sportstimer/widgets/custom_calendar.dart';
 import 'package:sportstimer/widgets/expanded_section.dart';
 import 'package:sportstimer/widgets/start_screen_item.dart';
@@ -122,8 +124,6 @@ class StartScreenState extends State<StartScreen>
 
   @override
   Widget build(BuildContext context) {
-    const firstColor = Color(0xff5b86e5);
-
     return Scaffold(
       body: new SafeArea(
         child: Padding(
@@ -134,6 +134,10 @@ class StartScreenState extends State<StartScreen>
               child: Column(
                 children: <Widget>[
                   CustomCalendar(),
+                  Container(
+                      width: double.infinity,
+                      height: 200,
+                      child: CustomBarChart()),
                   Container(
                     width: double.infinity,
                     height: 50,
@@ -266,11 +270,20 @@ class StartScreenState extends State<StartScreen>
                     elevation: 8.0,
                     radius: 52.0,
                     text: "Start",
-                    background: firstColor,
+                    background: Colors.lightBlue,
                     icon: Icons.accessibility,
                     onPressed: () => _startWorkout(id),
                   ),
-                  AnimatedButton(onPressed: () => _startWorkout(id))
+                  FloatingActionButton(onPressed: () {
+                    WorkoutTimeModel workout = WorkoutTimeModel(
+                      id: id,
+                      workDuration: '50',
+                      date: DateTime.now().toIso8601String(),
+                    );
+
+                    Provider.of<WorkoutProvider>(context, listen: false)
+                        .addWorkoutDetail(workout);
+                  },),
                 ],
               ),
             ),
