@@ -105,7 +105,6 @@ class StartScreenState extends State<StartScreen>
     );
 
     i++;
-
     Provider.of<TimerProvider>(context, listen: false)
         .addTimerDetail(timerDetailModel);
   }
@@ -133,11 +132,8 @@ class StartScreenState extends State<StartScreen>
             child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
-                  CustomCalendar(),
-                  Container(
-                      width: double.infinity,
-                      height: 200,
-                      child: CustomBarChart()),
+                  CustomCalendar(
+                  ),
                   Container(
                     width: double.infinity,
                     height: 50,
@@ -274,16 +270,18 @@ class StartScreenState extends State<StartScreen>
                     icon: Icons.accessibility,
                     onPressed: () => _startWorkout(id),
                   ),
-                  FloatingActionButton(onPressed: () {
-                    WorkoutTimeModel workout = WorkoutTimeModel(
-                      id: id,
-                      workDuration: '50',
-                      date: DateTime.now().toIso8601String(),
-                    );
+                  FloatingActionButton(
+                    onPressed: () {
+                      WorkoutTimeModel workout = WorkoutTimeModel(
+                        id: id,
+                        workDuration: '50',
+                        date: DateTime.now().toIso8601String(),
+                      );
 
-                    Provider.of<WorkoutProvider>(context, listen: false)
-                        .addWorkoutDetail(workout);
-                  },),
+                      Provider.of<WorkoutProvider>(context, listen: false)
+                          .addWorkoutDetail(workout);
+                    },
+                  ),
                 ],
               ),
             ),

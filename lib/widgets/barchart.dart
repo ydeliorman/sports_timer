@@ -21,6 +21,12 @@ import 'package:sportstimer/models/workout_time_model.dart';
 import 'package:sportstimer/providers/workout_time_provider.dart';
 
 class CustomBarChart extends StatefulWidget {
+  final DateTime startDayOfWeek;
+  final DateTime endDayOfWeek;
+
+  const CustomBarChart({Key key, this.startDayOfWeek, this.endDayOfWeek})
+      : super(key: key);
+
   @override
   _CustomBarChartState createState() => _CustomBarChartState();
 }
@@ -29,8 +35,41 @@ class _CustomBarChartState extends State<CustomBarChart> {
   List<WorkoutTimeModel> workoutDetails = [];
   List<WorkoutGraphInfo> data = [];
 
-  ///TODO YED when date is changed from MAY 2020 fetch data again
+  DateTime _retrieveMondayOrSundayOfTheWeek(bool isMonday) {
+    var dateTime = DateTime.now();
+    var desiredDay = 1;
+    isMonday ? desiredDay = 1 : desiredDay = 7;
+    while (dateTime.weekday != desiredDay) {
+      if (isMonday) {
+        dateTime = dateTime.subtract(new Duration(days: 1));
+      } else {
+        dateTime = dateTime.add(new Duration(days: 1));
+      }
+    }
+
+    return dateTime;
+  }
+
   void fetchSavedData() {
+    DateTime startDayOfWeek = widget.startDayOfWeek;
+    DateTime endDayOfWeek = widget.endDayOfWeek;
+
+    ///startDayOfWeek,endDayOfWeek  are set from custom_calendar#onVisibleDaysChanged
+    ///if they are null retrieve as below
+    if (startDayOfWeek == null) {
+      startDayOfWeek = _retrieveMondayOrSundayOfTheWeek(true);
+    }
+
+    ///subtracted by 1 day because Date.isAfter looks for day later
+    startDayOfWeek = startDayOfWeek.subtract(new Duration(days: 1));
+
+    if (endDayOfWeek == null) {
+      endDayOfWeek = _retrieveMondayOrSundayOfTheWeek(false);
+    }
+
+    ///added by 1 day because Date.isAfter looks for day later
+    endDayOfWeek = endDayOfWeek.add(new Duration(days: 1));
+
     workoutDetails =
         Provider.of<WorkoutProvider>(context, listen: true).allWorkoutModels;
     data.add(WorkoutGraphInfo("Mon", 0));
@@ -41,24 +80,34 @@ class _CustomBarChartState extends State<CustomBarChart> {
     data.add(WorkoutGraphInfo("Sat", 0));
     data.add(WorkoutGraphInfo("Sun", 0));
     workoutDetails.forEach((workout) {
-      data.add(WorkoutGraphInfo(
-          DateFormat('EEEE')
-              .format(DateTime.parse(workout.date))
-              .substring(0, 3),
-          int.parse(workout.workDuration)));
+      DateTime workoutDate = DateTime.parse(workout.date);
+      if (workoutDate.isAfter(startDayOfWeek) &&
+          workoutDate.isBefore(endDayOfWeek)) {
+        data.add(WorkoutGraphInfo(
+            DateFormat('EEEE')
+                .format(DateTime.parse(workout.date))
+                .substring(0, 3),
+            int.parse(workout.workDuration)));
+      }
     });
   }
 
   List<charts.Series<WorkoutGraphInfo, String>> _createData() {
     return [
       new charts.Series<WorkoutGraphInfo, String>(
-        id: 'Sales',
+        id: 'Workouts',
         colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (WorkoutGraphInfo sales, _) => sales.day,
-        measureFn: (WorkoutGraphInfo sales, _) => sales.workDuration,
+        domainFn: (WorkoutGraphInfo workout, _) => workout.day,
+        measureFn: (WorkoutGraphInfo workout, _) => workout.workDuration,
         data: data,
       )
     ];
+  }
+
+  void setStateFromCalender() {
+    setState(() {
+      fetchSavedData();
+    });
   }
 
   @override
@@ -69,6 +118,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
 
   @override
   Widget build(BuildContext context) {
+    fetchSavedData();
     return new charts.BarChart(
       _createData(),
       animate: true,
