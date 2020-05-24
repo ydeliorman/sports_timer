@@ -18,7 +18,6 @@ class StartScreen extends StatefulWidget {
 
 class StartScreenState extends State<StartScreen>
     with SingleTickerProviderStateMixin {
-  final _formKey = GlobalKey<FormState>();
   String id = "1";
   String sets = "3";
   String work = "0.3";
@@ -59,8 +58,6 @@ class StartScreenState extends State<StartScreen>
   }
 
   void _startWorkout(String id) {
-    _formKey.currentState.save();
-
     TimerDetailModel timerDetailModel = TimerDetailModel(
       id: id,
       sets: sets,
@@ -124,205 +121,202 @@ class StartScreenState extends State<StartScreen>
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                CustomCalendar(),
-                SizedBox(
-                  height: 50,
-                ),
-                Container(
-                  width: double.infinity,
-                  height: 50,
-                  child: PageView(
-                    controller: _pageController,
-                    children: <Widget>[
-                      Text(
-                        "Configuration 1/3",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 25),
-                      ),
-                      Text("Configuration 2/3",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 25)),
-                      Text(
-                        "Configuration 3/3",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 25),
-                      ),
-                    ],
-                    onPageChanged: (index) {
-                      setState(
-                        () {
-                          TimerDetailModel timerDetail = timerDetails
-                              .where((timerDetail) =>
-                                  timerDetail.id == "${index + 1}")
-                              .first;
-                          if (timerDetail == null)
-                            timerDetail = timerDetails[index];
-                          id = "${index + 1}";
-                          sets = timerDetail.sets;
-                          work = timerDetail.workDuration;
-                          rest = timerDetail.restDuration;
-                          toggleOff();
-                        },
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                InkWell(
-                  onTap: () {
-                    _toggleExpand(1);
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      Text(
-                        'Sets',
-                        style: TextStyle(fontSize: 25),
-                      ),
-                      Spacer(),
-                      Text(
-                        sets,
-                        style: TextStyle(fontSize: 25),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                InkWell(
-                  onTap: () {
-                    _toggleExpand(2);
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      Text(
-                        'Work',
-                        style: TextStyle(fontSize: 25),
-                      ),
-                      Spacer(),
-                      Text(
-                        NumberPickerFormatter.gatherTimeForRichText(work)[0] +
-                            ":" +
-                            NumberPickerFormatter.gatherTimeForRichText(
-                                work)[1],
-                        style: TextStyle(fontSize: 25),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                InkWell(
-                  onTap: () {
-                    _toggleExpand(3);
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      Text(
-                        'Rest',
-                        style: TextStyle(fontSize: 25),
-                      ),
-                      Spacer(),
-                      Text(
-                        NumberPickerFormatter.gatherTimeForRichText(rest)[0] +
-                            ":" +
-                            NumberPickerFormatter.gatherTimeForRichText(
-                                rest)[1],
-                        style: TextStyle(fontSize: 25),
-                      ),
-                    ],
-                  ),
-                ),
-                ExpandedSection(
-                  expand: _isExpandedSets,
-                  child: StartScreenItem(
-                    "SETS",
-                    sets,
-                    this,
-                  ),
-                ),
-                ExpandedSection(
-                  expand: _isExpandedWork,
-                  child: StartScreenItem(
-                    "WORK",
-                    work,
-                    this,
-                  ),
-                ),
-                ExpandedSection(
-                  expand: _isExpandedRest,
-                  child: StartScreenItem(
-                    "REST",
-                    rest,
-                    this,
-                  ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              CustomCalendar(),
+              SizedBox(
+                height: 50,
+              ),
+              Container(
+                width: double.infinity,
+                height: 50,
+                child: PageView(
+                  controller: _pageController,
                   children: <Widget>[
                     Text(
-                      'Volume',
+                      "Configuration 1/3",
+                      textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 25),
                     ),
-                    Container(
-                      width: 270,
-                      child: SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: Colors.red[700],
-                          inactiveTrackColor: Colors.red[100],
-                          trackShape: RectangularSliderTrackShape(),
-                          trackHeight: 4.0,
-                          thumbColor: Colors.redAccent,
-                          thumbShape:
-                              RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                          overlayColor: Colors.red.withAlpha(32),
-                          overlayShape:
-                              RoundSliderOverlayShape(overlayRadius: 28.0),
-                        ),
-                        child: Slider(
-                          value: _sliderValue,
-                          onChanged: (value) {
-                            setState(() {
-                              _sliderValue = value;
-                            });
-                          },
-                        ),
-                      ),
+                    Text("Configuration 2/3",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 25)),
+                    Text(
+                      "Configuration 3/3",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 25),
+                    ),
+                  ],
+                  onPageChanged: (index) {
+                    setState(
+                      () {
+                        TimerDetailModel timerDetail = timerDetails
+                            .where((timerDetail) =>
+                                timerDetail.id == "${index + 1}")
+                            .first;
+                        if (timerDetail == null)
+                          timerDetail = timerDetails[index];
+                        id = "${index + 1}";
+                        sets = timerDetail.sets;
+                        work = timerDetail.workDuration;
+                        rest = timerDetail.restDuration;
+                        toggleOff();
+                      },
+                    );
+                  },
+                ),
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              InkWell(
+                onTap: () {
+                  _toggleExpand(1);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Text(
+                      'Sets',
+                      style: TextStyle(fontSize: 25),
+                    ),
+                    Spacer(),
+                    Text(
+                      sets,
+                      style: TextStyle(fontSize: 25),
                     ),
                   ],
                 ),
-                const Divider(),
-                SizedBox(
-                  height: 300,
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              InkWell(
+                onTap: () {
+                  _toggleExpand(2);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Text(
+                      'Work',
+                      style: TextStyle(fontSize: 25),
+                    ),
+                    Spacer(),
+                    Text(
+                      NumberPickerFormatter.gatherTimeForRichText(work)[0] +
+                          ":" +
+                          NumberPickerFormatter.gatherTimeForRichText(
+                              work)[1],
+                      style: TextStyle(fontSize: 25),
+                    ),
+                  ],
                 ),
-                NiceButton(
-                  width: 255,
-                  elevation: 8.0,
-                  radius: 52.0,
-                  text: "Start",
-                  background: Colors.lightBlue,
-                  icon: Icons.accessibility,
-                  onPressed: () => _startWorkout(id),
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              InkWell(
+                onTap: () {
+                  _toggleExpand(3);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Text(
+                      'Rest',
+                      style: TextStyle(fontSize: 25),
+                    ),
+                    Spacer(),
+                    Text(
+                      NumberPickerFormatter.gatherTimeForRichText(rest)[0] +
+                          ":" +
+                          NumberPickerFormatter.gatherTimeForRichText(
+                              rest)[1],
+                      style: TextStyle(fontSize: 25),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  height: 10,
+              ),
+              ExpandedSection(
+                expand: _isExpandedSets,
+                child: StartScreenItem(
+                  "SETS",
+                  sets,
+                  this,
                 ),
-              ],
-            ),
+              ),
+              ExpandedSection(
+                expand: _isExpandedWork,
+                child: StartScreenItem(
+                  "WORK",
+                  work,
+                  this,
+                ),
+              ),
+              ExpandedSection(
+                expand: _isExpandedRest,
+                child: StartScreenItem(
+                  "REST",
+                  rest,
+                  this,
+                ),
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    'Volume',
+                    style: TextStyle(fontSize: 25),
+                  ),
+                  Container(
+                    width: 270,
+                    child: SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        activeTrackColor: Colors.red[700],
+                        inactiveTrackColor: Colors.red[100],
+                        trackShape: RectangularSliderTrackShape(),
+                        trackHeight: 4.0,
+                        thumbColor: Colors.redAccent,
+                        thumbShape:
+                            RoundSliderThumbShape(enabledThumbRadius: 12.0),
+                        overlayColor: Colors.red.withAlpha(32),
+                        overlayShape:
+                            RoundSliderOverlayShape(overlayRadius: 28.0),
+                      ),
+                      child: Slider(
+                        value: _sliderValue,
+                        onChanged: (value) {
+                          setState(() {
+                            _sliderValue = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(),
+              SizedBox(
+                height: 100,
+              ),
+              NiceButton(
+                width: 255,
+                elevation: 8.0,
+                radius: 52.0,
+                text: "Start",
+                background: Colors.lightBlue,
+                icon: Icons.accessibility,
+                onPressed: () => _startWorkout(id),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+            ],
           ),
         ),
       ),

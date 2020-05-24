@@ -60,8 +60,8 @@ class _TimerScreenState extends State<TimerScreen>
   void workoutFinished() {
     WorkoutTimeModel workout = WorkoutTimeModel(
       id: id,
-      workDuration: (_workTime* int.parse(timerDetailModel.sets)).toString(),
-      date:  new DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      workDuration: (_workTime * int.parse(timerDetailModel.sets)).toString(),
+      date: new DateFormat('yyyy-MM-dd').format(DateTime.now()),
     );
 
     Provider.of<WorkoutProvider>(context, listen: false)
@@ -119,25 +119,36 @@ class _TimerScreenState extends State<TimerScreen>
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: isWorkoutFinished
-            ? Column(
-                children: <Widget>[
-                  RaisedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              )
-            : Column(
+      body: isWorkoutFinished
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                Text("Well done!"),
+                Text("Training Time: ${NumberPickerFormatter.extractWorkTime(timerDetailModel)}"),
+                FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Return Back"),
+                ),
+              ],
+            )
+          : Container(
+              color: isWorkMode ? Colors.red : Colors.blueAccent,
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
+                  SizedBox(
+                    height: 70,
+                  ),
                   Container(
-                    child: Text(_numberOfSets == 1
-                        ? 'Last Set'
-                        : 'Remaining Sets: $_numberOfSets'),
+                    child: Text(
+                      _numberOfSets == 1
+                          ? 'Last Set'
+                          : 'Remaining Sets: $_numberOfSets',
+                      style: TextStyle(fontSize: 30),
+                    ),
                   ),
                   Expanded(
                     child: Align(
@@ -168,7 +179,7 @@ class _TimerScreenState extends State<TimerScreen>
                                 children: <Widget>[
                                   Text(
                                     isWorkMode ? 'Work' : 'Rest',
-                                    style: themeData.textTheme.subtitle1,
+                                    style: TextStyle(fontSize: 40),
                                   ),
                                   AnimatedBuilder(
                                       animation: _controller,
@@ -212,7 +223,7 @@ class _TimerScreenState extends State<TimerScreen>
                   )
                 ],
               ),
-      ),
+            ),
     );
   }
 }

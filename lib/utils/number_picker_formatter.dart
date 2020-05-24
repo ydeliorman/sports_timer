@@ -48,4 +48,24 @@ class NumberPickerFormatter {
 
     return [intPart, decimalPart];
   }
+
+  static int extractWorkTime(TimerDetailModel timerDetailModel) {
+    int workDurationDecimalPart;
+
+    var workDurationInDecimal;
+    workDurationInDecimal = double.parse(timerDetailModel.workDuration);
+
+    int workDurationIntPart = workDurationInDecimal.toInt();
+
+    ///if the decimal part is divided by 10(length == 1), multiply by then the extracted decimal part
+    if (workDurationInDecimal.toString().split('.')[1].length == 1) {
+      workDurationDecimalPart =
+          int.tryParse(workDurationInDecimal.toString().split('.')[1]) * 10;
+    } else if (workDurationInDecimal.toString().split('.')[1].length == 2) {
+      workDurationDecimalPart =
+          int.tryParse(workDurationInDecimal.toString().split('.')[1]);
+    }
+
+    return (60 * workDurationIntPart + workDurationDecimalPart) * int.tryParse(timerDetailModel.sets);
+  }
 }
