@@ -80,6 +80,7 @@ class TimerProvider with ChangeNotifier {
       initTimerDetailForFirstTime();
     }
 
+    timerDetails.sort((a, b) => a.id.compareTo(b.id));
     notifyListeners();
   }
 

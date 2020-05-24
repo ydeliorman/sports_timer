@@ -18,6 +18,19 @@ class WorkoutProvider with ChangeNotifier {
   }
 
   void addWorkoutDetail(WorkoutTimeModel _workoutDetail) {
+    List<WorkoutTimeModel> listOfMatchingWorkouts = workoutModels
+        .where((workoutModel) => workoutModel.date == _workoutDetail.date)
+        .toList();
+
+    ///if any workout is done at same day update work duration
+    if (listOfMatchingWorkouts != null && listOfMatchingWorkouts.length > 0) {
+      WorkoutTimeModel matchingWorkout = listOfMatchingWorkouts[0];
+      workoutModels.remove(matchingWorkout);
+      int newWorkDuration = int.parse(_workoutDetail.workDuration) +
+          int.parse(matchingWorkout.workDuration);
+      _workoutDetail.workDuration = newWorkDuration.toString();
+    }
+
     workoutModels.add(_workoutDetail);
 
     updateSharedPreferences();
@@ -39,7 +52,7 @@ class WorkoutProvider with ChangeNotifier {
 
   Future updateSharedPreferences() async {
     List<String> workoutDetailList =
-    workoutModels.map((f) => json.encode(f.toJson())).toList();
+        workoutModels.map((f) => json.encode(f.toJson())).toList();
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     await prefs.setStringList('workoutDetailList', workoutDetailList);
@@ -56,5 +69,4 @@ class WorkoutProvider with ChangeNotifier {
 
     notifyListeners();
   }
-
 }

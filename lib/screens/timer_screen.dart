@@ -1,12 +1,15 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:sportstimer/models/timer_detail_model.dart';
+import 'package:sportstimer/models/workout_time_model.dart';
+import 'package:sportstimer/providers/workout_time_provider.dart';
 import 'package:sportstimer/utils/number_picker_formatter.dart';
 
 class TimerScreen extends StatefulWidget {
   static String route = '/TimerScreen';
-
 
   @override
   _TimerScreenState createState() => _TimerScreenState();
@@ -19,6 +22,8 @@ class _TimerScreenState extends State<TimerScreen>
 
   int _numberOfSets;
   bool isWorkMode = true;
+  String id;
+  bool isWorkoutFinished = false;
 
   Future<void> _startAnimation() async {
     try {
@@ -40,11 +45,31 @@ class _TimerScreenState extends State<TimerScreen>
             _numberOfSets -= 1;
           }
           isWorkMode = !isWorkMode;
+
+          ///if workout is finished
+          if (_numberOfSets == 0) {
+            workoutFinished();
+          }
         });
       }
     } catch (error) {
       print("error");
     }
+  }
+
+  void workoutFinished() {
+    WorkoutTimeModel workout = WorkoutTimeModel(
+      id: id,
+      workDuration: (_workTime* int.parse(timerDetailModel.sets)).toString(),
+      date:  new DateFormat('yyyy-MM-dd').format(DateTime.now()),
+    );
+
+    Provider.of<WorkoutProvider>(context, listen: false)
+        .addWorkoutDetail(workout);
+
+    setState(() {
+      isWorkoutFinished = !isWorkoutFinished;
+    });
   }
 
   void _pauseAnimation() {
@@ -59,6 +84,7 @@ class _TimerScreenState extends State<TimerScreen>
       return;
     }
 
+    id = timerDetailModel.id;
     _numberOfSets = int.parse(timerDetailModel.sets);
     _controller = AnimationController(
       vsync: this,
@@ -80,11 +106,13 @@ class _TimerScreenState extends State<TimerScreen>
   }
 
   int get _workTime {
-    return NumberPickerFormatter.extractNumberPickerTime("work", timerDetailModel);
+    return NumberPickerFormatter.extractNumberPickerTime(
+        "work", timerDetailModel);
   }
 
   int get _restTime {
-    return NumberPickerFormatter.extractNumberPickerTime("rest", timerDetailModel);
+    return NumberPickerFormatter.extractNumberPickerTime(
+        "rest", timerDetailModel);
   }
 
   @override
@@ -93,85 +121,97 @@ class _TimerScreenState extends State<TimerScreen>
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Container(
-              child: Text(_numberOfSets == 1
-                  ? 'Last Set'
-                  : 'Remaining Sets: $_numberOfSets'),
-            ),
-            Expanded(
-              child: Align(
-                alignment: FractionalOffset.center,
-                child: AspectRatio(
-                  aspectRatio: 1.0,
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned.fill(
-                        child: AnimatedBuilder(
-                          animation: _controller,
-                          builder: (BuildContext context, Widget child) {
-                            return CustomPaint(
-                                painter: TimerPainter(
-                              animation: _controller,
-                              backgroundColor: Colors.white,
-                              color: themeData.indicatorColor,
-                            ));
-                          },
-                        ),
-                      ),
-                      Align(
-                        alignment: FractionalOffset.center,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+        child: isWorkoutFinished
+            ? Column(
+                children: <Widget>[
+                  RaisedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Container(
+                    child: Text(_numberOfSets == 1
+                        ? 'Last Set'
+                        : 'Remaining Sets: $_numberOfSets'),
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: FractionalOffset.center,
+                      child: AspectRatio(
+                        aspectRatio: 1.0,
+                        child: Stack(
                           children: <Widget>[
-                            Text(
-                              isWorkMode ? 'Work' : 'Rest',
-                              style: themeData.textTheme.subtitle1,
-                            ),
-                            AnimatedBuilder(
+                            Positioned.fill(
+                              child: AnimatedBuilder(
                                 animation: _controller,
                                 builder: (BuildContext context, Widget child) {
-                                  return Text(
-                                    timerString,
-                                    style: themeData.textTheme.display4,
-                                  );
-                                }),
+                                  return CustomPaint(
+                                      painter: TimerPainter(
+                                    animation: _controller,
+                                    backgroundColor: Colors.white,
+                                    color: themeData.indicatorColor,
+                                  ));
+                                },
+                              ),
+                            ),
+                            Align(
+                              alignment: FractionalOffset.center,
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    isWorkMode ? 'Work' : 'Rest',
+                                    style: themeData.textTheme.subtitle1,
+                                  ),
+                                  AnimatedBuilder(
+                                      animation: _controller,
+                                      builder:
+                                          (BuildContext context, Widget child) {
+                                        return Text(
+                                          timerString,
+                                          style: themeData.textTheme.display4,
+                                        );
+                                      }),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  FloatingActionButton(
-                    child: AnimatedBuilder(
-                      animation: _controller,
-                      builder: (BuildContext context, Widget child) {
-                        return Icon(_controller.isAnimating
-                            ? Icons.pause
-                            : Icons.play_arrow);
-                      },
                     ),
-                    onPressed: () {
-                      _controller.isAnimating
-                          ? _pauseAnimation()
-                          : _startAnimation();
-                    },
+                  ),
+                  Container(
+                    margin: EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        FloatingActionButton(
+                          child: AnimatedBuilder(
+                            animation: _controller,
+                            builder: (BuildContext context, Widget child) {
+                              return Icon(_controller.isAnimating
+                                  ? Icons.pause
+                                  : Icons.play_arrow);
+                            },
+                          ),
+                          onPressed: () {
+                            _controller.isAnimating
+                                ? _pauseAnimation()
+                                : _startAnimation();
+                          },
+                        )
+                      ],
+                    ),
                   )
                 ],
               ),
-            )
-          ],
-        ),
       ),
     );
   }

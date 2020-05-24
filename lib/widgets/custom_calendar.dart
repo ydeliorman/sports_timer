@@ -63,7 +63,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
         _buildTableCalendar(),
         Container(
           width: double.infinity,
-          height: 200,
+          height: 350,
           child: CustomBarChart(startDayOfWeek: startDayOfWeek,endDayOfWeek: endDayOfWeek,),
         ),
       ],
@@ -98,7 +98,6 @@ class _CustomCalendarState extends State<CustomCalendar> {
 //        ),
 //      ),
         onDaySelected: _onDaySelected,
-
         onVisibleDaysChanged: (dateTime1, dateTime2, _) {
           setState(() {
             startDayOfWeek = dateTime1;
