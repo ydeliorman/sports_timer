@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sportstimer/models/workout_time_model.dart';
 import 'package:sportstimer/providers/workout_time_provider.dart';
-import 'package:sportstimer/utils/appcolors.dart';
 import 'package:sportstimer/widgets/barchart.dart';
+import 'package:sportstimer/widgets/expanded_section.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CustomCalendar extends StatefulWidget {
@@ -18,6 +19,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
   List<WorkoutTimeModel> workoutDetails = [];
   DateTime startDayOfWeek;
   DateTime endDayOfWeek;
+  bool _isExpanded = false;
 
   ///fetch data for workout date and work time.put them in events for making them visible on calendar.
   void fetchSavedData() {
@@ -39,10 +41,15 @@ class _CustomCalendarState extends State<CustomCalendar> {
   void initState() {
     super.initState();
     final _selectedDay = DateTime.now();
-
     _events = {};
     _selectedEvents = _events[_selectedDay] ?? [];
     _calendarController = CalendarController();
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isExpanded = false;
+    });
   }
 
   @override
@@ -51,21 +58,27 @@ class _CustomCalendarState extends State<CustomCalendar> {
     super.dispose();
   }
 
-  void _onDaySelected(DateTime day, List events) {
-    setState(() {
-      _selectedEvents = events;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        _buildTableCalendar(),
-        Container(
-          width: double.infinity,
-          height: 350,
-          child: CustomBarChart(startDayOfWeek: startDayOfWeek,endDayOfWeek: endDayOfWeek,),
+        InkWell(
+            onTap: () {
+              setState(() {
+                _isExpanded = !_isExpanded;
+              });
+            },
+            child: _buildTableCalendar()),
+        ExpandedSection(
+          expand: _isExpanded,
+          child: Container(
+            width: double.infinity,
+            height: 300,
+            child: CustomBarChart(
+              startDayOfWeek: startDayOfWeek,
+              endDayOfWeek: endDayOfWeek,
+            ),
+          ),
         ),
       ],
     );
@@ -86,9 +99,8 @@ class _CustomCalendarState extends State<CustomCalendar> {
 
         ///until here
         calendarStyle: CalendarStyle(
-          selectedColor: lushLava,
-          todayColor: Colors.deepOrange[200],
-          markersColor: Colors.brown[700],
+          todayColor: Colors.lightBlue,
+          markersColor: Colors.black,
           outsideDaysVisible: true,
         ),
 //      headerStyle: HeaderStyle(
@@ -98,11 +110,15 @@ class _CustomCalendarState extends State<CustomCalendar> {
 //          borderRadius: BorderRadius.circular(16.0),
 //        ),
 //      ),
-        onDaySelected: _onDaySelected,
+        onDaySelected: (a, b) {
+          setState(() {
+            _isExpanded = !_isExpanded;
+          });
+        },
         onVisibleDaysChanged: (dateTime1, dateTime2, _) {
           setState(() {
-            startDayOfWeek = dateTime1;
-            endDayOfWeek = dateTime2;
+            startDayOfWeek = DateTime.parse(DateFormat('yyyy-MM-dd').format(dateTime1));
+            endDayOfWeek =  DateTime.parse(DateFormat('yyyy-MM-dd').format(dateTime2)).add(new Duration(hours: 23));
           });
         });
   }

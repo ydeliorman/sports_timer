@@ -125,7 +125,7 @@ class StartScreenState extends State<StartScreen>
     return Scaffold(
       backgroundColor: white2,
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(15.0),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -310,7 +310,7 @@ class StartScreenState extends State<StartScreen>
               ),
               const Divider(),
               SizedBox(
-                height: 100,
+                height: 140,
               ),
               NiceButton(
                 width: 255,

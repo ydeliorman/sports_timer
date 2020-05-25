@@ -120,6 +120,7 @@ class _TimerScreenState extends State<TimerScreen>
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
     return Scaffold(
+      appBar: AppBar(),
       body: isWorkoutFinished
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -151,9 +152,9 @@ class _TimerScreenState extends State<TimerScreen>
                       style: TextStyle(fontSize: 40, color:Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Expanded(
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Align(
                         alignment: FractionalOffset.center,
                         child: AspectRatio(

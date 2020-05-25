@@ -47,7 +47,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
       }
     }
 
-    return dateTime;
+    return DateTime.parse(DateFormat('yyyy-MM-dd').format(dateTime));
   }
 
   void fetchSavedData() {
@@ -60,15 +60,9 @@ class _CustomBarChartState extends State<CustomBarChart> {
       startDayOfWeek = _retrieveMondayOrSundayOfTheWeek(true);
     }
 
-    ///subtracted by 1 day because Date.isAfter looks for day later
-    startDayOfWeek = startDayOfWeek.subtract(new Duration(days: 1));
-
     if (endDayOfWeek == null) {
       endDayOfWeek = _retrieveMondayOrSundayOfTheWeek(false);
     }
-
-    ///added by 1 day because Date.isAfter looks for day later
-    endDayOfWeek = endDayOfWeek.add(new Duration(days: 1));
 
     workoutDetails =
         Provider.of<WorkoutProvider>(context, listen: true).allWorkoutModels;
@@ -80,7 +74,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
     data.add(WorkoutGraphInfo("Sat", 0));
     data.add(WorkoutGraphInfo("Sun", 0));
     workoutDetails.forEach((workout) {
-      DateTime workoutDate = DateTime.parse(workout.date);
+      DateTime workoutDate = DateTime.tryParse(workout.date).toLocal().add(Duration(hours: 1));
       if (workoutDate.isAfter(startDayOfWeek) &&
           workoutDate.isBefore(endDayOfWeek)) {
         data.add(WorkoutGraphInfo(
