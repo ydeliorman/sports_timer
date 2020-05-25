@@ -39,6 +39,7 @@ class MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'Sports Timer',
         theme: ThemeData(
+          primaryColor: Colors.blueAccent,
           primarySwatch: Colors.purple,
           accentColor: Colors.deepOrange,
           fontFamily: 'Lato',

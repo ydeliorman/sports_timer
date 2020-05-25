@@ -96,7 +96,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
     return [
       new charts.Series<WorkoutGraphInfo, String>(
         id: 'Workouts',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        colorFn: (_, __) => charts.ColorUtil.fromDartColor(Theme.of(context).primaryColor),
         domainFn: (WorkoutGraphInfo workout, _) => workout.day,
         measureFn: (WorkoutGraphInfo workout, _) => workout.workDuration,
         data: data,

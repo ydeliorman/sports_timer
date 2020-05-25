@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:nice_button/nice_button.dart';
 import 'package:provider/provider.dart';
 import 'package:sportstimer/models/timer_detail_model.dart';
 import 'package:sportstimer/providers/timer_detail_provider.dart';
 import 'package:sportstimer/screens/timer_screen.dart';
+import 'package:sportstimer/utils/appcolors.dart';
 import 'package:sportstimer/utils/number_picker_formatter.dart';
 import 'package:sportstimer/widgets/custom_calendar.dart';
 import 'package:sportstimer/widgets/expanded_section.dart';
@@ -118,7 +120,10 @@ class StartScreenState extends State<StartScreen>
 
   @override
   Widget build(BuildContext context) {
+    Color primaryColor = Theme.of(context).primaryColor;
+
     return Scaffold(
+      backgroundColor: white2,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
@@ -137,15 +142,20 @@ class StartScreenState extends State<StartScreen>
                     Text(
                       "Configuration 1/3",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 25),
+                      style:
+                          TextStyle(fontSize: 25),
                     ),
-                    Text("Configuration 2/3",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 25)),
+                    Text(
+                      "Configuration 2/3",
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                    ),
                     Text(
                       "Configuration 3/3",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 25),
+                      style:
+                          TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                     ),
                   ],
                   onPageChanged: (index) {
@@ -184,9 +194,17 @@ class StartScreenState extends State<StartScreen>
                     Spacer(),
                     Text(
                       sets,
-                      style: TextStyle(fontSize: 25),
+                      style: TextStyle(fontSize: 25, color: primaryColor),
                     ),
                   ],
+                ),
+              ),
+              ExpandedSection(
+                expand: _isExpandedSets,
+                child: StartScreenItem(
+                  "SETS",
+                  sets,
+                  this,
                 ),
               ),
               SizedBox(
@@ -207,11 +225,18 @@ class StartScreenState extends State<StartScreen>
                     Text(
                       NumberPickerFormatter.gatherTimeForRichText(work)[0] +
                           ":" +
-                          NumberPickerFormatter.gatherTimeForRichText(
-                              work)[1],
-                      style: TextStyle(fontSize: 25),
+                          NumberPickerFormatter.gatherTimeForRichText(work)[1],
+                      style: TextStyle(fontSize: 25, color: primaryColor),
                     ),
                   ],
+                ),
+              ),
+              ExpandedSection(
+                expand: _isExpandedWork,
+                child: StartScreenItem(
+                  "WORK",
+                  work,
+                  this,
                 ),
               ),
               SizedBox(
@@ -232,27 +257,10 @@ class StartScreenState extends State<StartScreen>
                     Text(
                       NumberPickerFormatter.gatherTimeForRichText(rest)[0] +
                           ":" +
-                          NumberPickerFormatter.gatherTimeForRichText(
-                              rest)[1],
-                      style: TextStyle(fontSize: 25),
+                          NumberPickerFormatter.gatherTimeForRichText(rest)[1],
+                      style: TextStyle(fontSize: 25, color: primaryColor),
                     ),
                   ],
-                ),
-              ),
-              ExpandedSection(
-                expand: _isExpandedSets,
-                child: StartScreenItem(
-                  "SETS",
-                  sets,
-                  this,
-                ),
-              ),
-              ExpandedSection(
-                expand: _isExpandedWork,
-                child: StartScreenItem(
-                  "WORK",
-                  work,
-                  this,
                 ),
               ),
               ExpandedSection(
@@ -277,11 +285,11 @@ class StartScreenState extends State<StartScreen>
                     width: 270,
                     child: SliderTheme(
                       data: SliderTheme.of(context).copyWith(
-                        activeTrackColor: Colors.red[700],
-                        inactiveTrackColor: Colors.red[100],
+                        activeTrackColor: Colors.blue[700],
+                        inactiveTrackColor: Colors.blue[100],
                         trackShape: RectangularSliderTrackShape(),
                         trackHeight: 4.0,
-                        thumbColor: Colors.redAccent,
+                        thumbColor: primaryColor,
                         thumbShape:
                             RoundSliderThumbShape(enabledThumbRadius: 12.0),
                         overlayColor: Colors.red.withAlpha(32),
@@ -309,7 +317,7 @@ class StartScreenState extends State<StartScreen>
                 elevation: 8.0,
                 radius: 52.0,
                 text: "Start",
-                background: Colors.lightBlue,
+                background: primaryColor,
                 icon: Icons.accessibility,
                 onPressed: () => _startWorkout(id),
               ),

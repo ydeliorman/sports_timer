@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportstimer/models/workout_time_model.dart';
 import 'package:sportstimer/providers/workout_time_provider.dart';
+import 'package:sportstimer/utils/appcolors.dart';
 import 'package:sportstimer/widgets/barchart.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -85,7 +86,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
 
         ///until here
         calendarStyle: CalendarStyle(
-          selectedColor: Colors.deepOrange[400],
+          selectedColor: lushLava,
           todayColor: Colors.deepOrange[200],
           markersColor: Colors.brown[700],
           outsideDaysVisible: true,

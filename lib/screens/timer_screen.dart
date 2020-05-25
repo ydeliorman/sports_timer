@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:sportstimer/models/timer_detail_model.dart';
 import 'package:sportstimer/models/workout_time_model.dart';
 import 'package:sportstimer/providers/workout_time_provider.dart';
+import 'package:sportstimer/utils/appcolors.dart';
 import 'package:sportstimer/utils/number_picker_formatter.dart';
 
 class TimerScreen extends StatefulWidget {
@@ -135,65 +136,68 @@ class _TimerScreenState extends State<TimerScreen>
               ],
             )
           : Container(
-              color: isWorkMode ? Colors.red : Colors.blueAccent,
+              color: isWorkMode ? lushLava : Colors.blueAccent,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   SizedBox(
-                    height: 70,
+                    height: 10,
                   ),
                   Container(
                     child: Text(
                       _numberOfSets == 1
                           ? 'Last Set'
                           : 'Remaining Sets: $_numberOfSets',
-                      style: TextStyle(fontSize: 30),
+                      style: TextStyle(fontSize: 40, color:Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  Expanded(
-                    child: Align(
-                      alignment: FractionalOffset.center,
-                      child: AspectRatio(
-                        aspectRatio: 1.0,
-                        child: Stack(
-                          children: <Widget>[
-                            Positioned.fill(
-                              child: AnimatedBuilder(
-                                animation: _controller,
-                                builder: (BuildContext context, Widget child) {
-                                  return CustomPaint(
-                                      painter: TimerPainter(
-                                    animation: _controller,
-                                    backgroundColor: Colors.white,
-                                    color: themeData.indicatorColor,
-                                  ));
-                                },
-                              ),
-                            ),
-                            Align(
-                              alignment: FractionalOffset.center,
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  Text(
-                                    isWorkMode ? 'Work' : 'Rest',
-                                    style: TextStyle(fontSize: 40),
-                                  ),
-                                  AnimatedBuilder(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Expanded(
+                      child: Align(
+                        alignment: FractionalOffset.center,
+                        child: AspectRatio(
+                          aspectRatio: 1.0,
+                          child: Stack(
+                            children: <Widget>[
+                              Positioned.fill(
+                                child: AnimatedBuilder(
+                                  animation: _controller,
+                                  builder: (BuildContext context, Widget child) {
+                                    return CustomPaint(
+                                        painter: TimerPainter(
                                       animation: _controller,
-                                      builder:
-                                          (BuildContext context, Widget child) {
-                                        return Text(
-                                          timerString,
-                                          style: themeData.textTheme.display4,
-                                        );
-                                      }),
-                                ],
+                                      backgroundColor: Colors.white,
+                                      color: themeData.indicatorColor,
+                                    ));
+                                  },
+                                ),
                               ),
-                            ),
-                          ],
+                              Align(
+                                alignment: FractionalOffset.center,
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      isWorkMode ? 'Work' : 'Rest',
+                                      style: TextStyle(fontSize: 40, color: Colors.white, fontWeight: FontWeight.bold),
+                                    ),
+                                    AnimatedBuilder(
+                                        animation: _controller,
+                                        builder:
+                                            (BuildContext context, Widget child) {
+                                          return Text(
+                                            timerString,
+                                            style: TextStyle(fontSize: 100, color:white2),
+                                          );
+                                        }),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
