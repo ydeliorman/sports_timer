@@ -149,13 +149,13 @@ class StartScreenState extends State<StartScreen>
                       "Configuration 2/3",
                       textAlign: TextAlign.center,
                       style:
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 25),
                     ),
                     Text(
                       "Configuration 3/3",
                       textAlign: TextAlign.center,
                       style:
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 25),
                     ),
                   ],
                   onPageChanged: (index) {

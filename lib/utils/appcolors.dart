@@ -20,3 +20,4 @@ const greenBlue= Color(0xFF264653);
 const blueGreat= Color(0xFF2DC7FF);
 
 const pink= Color(0xFF9570FF);
+const pinkishRed= Color(0xFFe63946);

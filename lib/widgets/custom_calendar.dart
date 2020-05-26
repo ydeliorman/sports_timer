@@ -110,15 +110,26 @@ class _CustomCalendarState extends State<CustomCalendar> {
 //          borderRadius: BorderRadius.circular(16.0),
 //        ),
 //      ),
-        onDaySelected: (a, b) {
+        onDaySelected: (clickedDate, b) {
           setState(() {
-            _isExpanded = !_isExpanded;
+            ///if the date clicked is today's date close bar chart, else keep is open
+            String userClickedDate =
+                DateFormat('yyyy-MM-dd').format(clickedDate);
+            String todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+            if (todayDate == userClickedDate) {
+              _isExpanded = !_isExpanded;
+            } else {
+              _isExpanded = true;
+            }
           });
         },
         onVisibleDaysChanged: (dateTime1, dateTime2, _) {
           setState(() {
-            startDayOfWeek = DateTime.parse(DateFormat('yyyy-MM-dd').format(dateTime1));
-            endDayOfWeek =  DateTime.parse(DateFormat('yyyy-MM-dd').format(dateTime2)).add(new Duration(hours: 23));
+            startDayOfWeek =
+                DateTime.parse(DateFormat('yyyy-MM-dd').format(dateTime1));
+            endDayOfWeek =
+                DateTime.parse(DateFormat('yyyy-MM-dd').format(dateTime2))
+                    .add(new Duration(hours: 23));
           });
         });
   }

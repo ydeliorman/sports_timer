@@ -119,16 +119,40 @@ class _TimerScreenState extends State<TimerScreen>
   @override
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
+    var workTime = NumberPickerFormatter.extractWorkTime(timerDetailModel);
+    String workoutDuration;
+    if(workTime < 60) {
+      workoutDuration = "$workTime seconds";
+    } else {
+      workoutDuration = "${int.parse((workTime/60).toStringAsFixed(0))} minutes and ${workTime%60} seconds";
+    }
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(backgroundColor:  isWorkMode ? lushLava : Colors.blueAccent,),
       body: isWorkoutFinished
           ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                Text("Well done!"),
-                Text("Training Time: ${NumberPickerFormatter.extractWorkTime(timerDetailModel)}"),
+                SizedBox(height: 80,),
+                Center(child: Text("Well done!",style: TextStyle(fontSize: 60,color: lushLava),),),
+                SizedBox(height: 100,),
+                RichText(
+                  text: TextSpan(
+                      text: 'You have trained ',
+                      style: TextStyle(fontSize: 20, color:Colors.black),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: workoutDuration,
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: pinkishRed,
+                          ),
+                        ),
+                      ]
+                  ),
+                ),
+                SizedBox(height: 250,),
                 FlatButton(
+                  color:t4_colorPrimary,
                   onPressed: () {
                     Navigator.pop(context);
                   },
