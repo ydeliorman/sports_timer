@@ -39,7 +39,7 @@ class _StartScreenItemState extends State<StartScreenItem> {
           children: <Widget>[
             Container(
               width: mediaQuery.width * 0.6,
-              height: mediaQuery.height * 0.15,
+              height: mediaQuery.height * 0.2,
               child: widget.title == "SETS"
                   ? NumberPicker.integer(
                       initialValue: int.parse(widget.textFormFieldValue),

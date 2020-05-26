@@ -119,44 +119,65 @@ class _TimerScreenState extends State<TimerScreen>
   @override
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
+    final mediaQuery = MediaQuery.of(context).size;
     var workTime = NumberPickerFormatter.extractWorkTime(timerDetailModel);
     String workoutDuration;
-    if(workTime < 60) {
+    if (workTime < 60) {
       workoutDuration = "$workTime seconds";
     } else {
-      workoutDuration = "${int.parse((workTime/60).toStringAsFixed(0))} minutes and ${workTime%60} seconds";
+      workoutDuration =
+          "${int.parse((workTime / 60).toStringAsFixed(0))} minutes and ${workTime % 60} seconds";
     }
     return Scaffold(
-      appBar: AppBar(backgroundColor:  isWorkMode ? lushLava : Colors.blueAccent,),
+      appBar: AppBar(
+        backgroundColor: isWorkMode ? lushLava : Colors.blueAccent,
+      ),
       body: isWorkoutFinished
           ? Column(
               children: <Widget>[
-                SizedBox(height: 80,),
-                Center(child: Text("Well done!",style: TextStyle(fontSize: 60,color: lushLava),),),
-                SizedBox(height: 100,),
+                SizedBox(
+                  height: mediaQuery.height * 0.12,
+                ),
+                Center(
+                  child: Text(
+                    "Well done!",
+                    style: TextStyle(
+                        fontSize: mediaQuery.width * 0.2, color: lushLava),
+                  ),
+                ),
+                SizedBox(
+                  height: mediaQuery.height * 0.15,
+                ),
                 RichText(
                   text: TextSpan(
                       text: 'You have trained ',
-                      style: TextStyle(fontSize: 20, color:Colors.black),
+                      style: TextStyle(
+                          fontSize: mediaQuery.width * 0.065,
+                          color: Colors.black),
                       children: <TextSpan>[
                         TextSpan(
                           text: workoutDuration,
                           style: TextStyle(
-                            fontSize: 24,
+                            fontSize: mediaQuery.width * 0.07,
                             fontWeight: FontWeight.bold,
                             color: pinkishRed,
                           ),
                         ),
-                      ]
-                  ),
+                      ]),
                 ),
-                SizedBox(height: 250,),
+                SizedBox(
+                  height: mediaQuery.height * 0.25,
+                ),
                 FlatButton(
-                  color:t4_colorPrimary,
+                  color: t4_colorPrimary,
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text("Return Back"),
+                  child: Text(
+                    "Return Back",
+                    style: TextStyle(
+                        fontSize: mediaQuery.width * 0.065, color: lushLava),
+                  ),
                 ),
               ],
             )
@@ -166,19 +187,22 @@ class _TimerScreenState extends State<TimerScreen>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   SizedBox(
-                    height: 10,
+                    height: mediaQuery.height * 0.03,
                   ),
                   Container(
                     child: Text(
                       _numberOfSets == 1
                           ? 'Last Set'
                           : 'Remaining Sets: $_numberOfSets',
-                      style: TextStyle(fontSize: 40, color:Colors.white, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: mediaQuery.width * 0.12,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: EdgeInsets.all(mediaQuery.width * 0.02),
                       child: Align(
                         alignment: FractionalOffset.center,
                         child: AspectRatio(
@@ -188,7 +212,8 @@ class _TimerScreenState extends State<TimerScreen>
                               Positioned.fill(
                                 child: AnimatedBuilder(
                                   animation: _controller,
-                                  builder: (BuildContext context, Widget child) {
+                                  builder:
+                                      (BuildContext context, Widget child) {
                                     return CustomPaint(
                                         painter: TimerPainter(
                                       animation: _controller,
@@ -207,15 +232,21 @@ class _TimerScreenState extends State<TimerScreen>
                                   children: <Widget>[
                                     Text(
                                       isWorkMode ? 'Work' : 'Rest',
-                                      style: TextStyle(fontSize: 40, color: Colors.white, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontSize: mediaQuery.width * 0.12,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     AnimatedBuilder(
                                         animation: _controller,
-                                        builder:
-                                            (BuildContext context, Widget child) {
+                                        builder: (BuildContext context,
+                                            Widget child) {
                                           return Text(
                                             timerString,
-                                            style: TextStyle(fontSize: 100, color:white2),
+                                            style: TextStyle(
+                                                fontSize:
+                                                    mediaQuery.width * 0.25,
+                                                color: white2),
                                           );
                                         }),
                                   ],
@@ -228,7 +259,7 @@ class _TimerScreenState extends State<TimerScreen>
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.all(8.0),
+                    margin: EdgeInsets.all(mediaQuery.height * 0.05),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[

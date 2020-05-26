@@ -142,17 +142,17 @@ class StartScreenState extends State<StartScreen>
                     Text(
                       "Configuration 1/3",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 25),
+                      style: TextStyle(fontSize: mediaQuery.width*0.065),
                     ),
                     Text(
                       "Configuration 2/3",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 25),
+                      style: TextStyle(fontSize:  mediaQuery.width*0.065),
                     ),
                     Text(
                       "Configuration 3/3",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 25),
+                      style: TextStyle(fontSize:  mediaQuery.width*0.065),
                     ),
                   ],
                   onPageChanged: (index) {
@@ -186,12 +186,12 @@ class StartScreenState extends State<StartScreen>
                   children: <Widget>[
                     Text(
                       'Sets',
-                      style: TextStyle(fontSize: 25),
+                      style: TextStyle(fontSize: mediaQuery.width*0.065),
                     ),
                     Spacer(),
                     Text(
                       sets,
-                      style: TextStyle(fontSize: 25, color: primaryColor),
+                      style: TextStyle(fontSize: mediaQuery.width*0.065, color: primaryColor),
                     ),
                   ],
                 ),
@@ -216,14 +216,14 @@ class StartScreenState extends State<StartScreen>
                   children: <Widget>[
                     Text(
                       'Work',
-                      style: TextStyle(fontSize: 25),
+                      style: TextStyle(fontSize: mediaQuery.width*0.065),
                     ),
                     Spacer(),
                     Text(
                       NumberPickerFormatter.gatherTimeForRichText(work)[0] +
                           ":" +
                           NumberPickerFormatter.gatherTimeForRichText(work)[1],
-                      style: TextStyle(fontSize: 25, color: primaryColor),
+                      style: TextStyle(fontSize: mediaQuery.width*0.065, color: primaryColor),
                     ),
                   ],
                 ),
@@ -248,14 +248,14 @@ class StartScreenState extends State<StartScreen>
                   children: <Widget>[
                     Text(
                       'Rest',
-                      style: TextStyle(fontSize: 25),
+                      style: TextStyle(fontSize: mediaQuery.width*0.065),
                     ),
                     Spacer(),
                     Text(
                       NumberPickerFormatter.gatherTimeForRichText(rest)[0] +
                           ":" +
                           NumberPickerFormatter.gatherTimeForRichText(rest)[1],
-                      style: TextStyle(fontSize: 25, color: primaryColor),
+                      style: TextStyle(fontSize: mediaQuery.width*0.065, color: primaryColor),
                     ),
                   ],
                 ),
@@ -276,7 +276,7 @@ class StartScreenState extends State<StartScreen>
                 children: <Widget>[
                   Text(
                     'Volume',
-                    style: TextStyle(fontSize: 25),
+                    style: TextStyle(fontSize: mediaQuery.width*0.065),
                   ),
                   Container(
                     width: mediaQuery.width * 0.7,
@@ -307,7 +307,7 @@ class StartScreenState extends State<StartScreen>
               ),
               const Divider(),
               SizedBox(
-                height: mediaQuery.height * 0.15,
+                height: mediaQuery.height * 0.09,
               ),
               NiceButton(
                 width: mediaQuery.width * 0.7,
