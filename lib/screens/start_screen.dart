@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:nice_button/nice_button.dart';
 import 'package:provider/provider.dart';
 import 'package:sportstimer/models/timer_detail_model.dart';
@@ -120,42 +119,40 @@ class StartScreenState extends State<StartScreen>
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context).size;
     Color primaryColor = Theme.of(context).primaryColor;
 
     return Scaffold(
       backgroundColor: white2,
       body: Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: EdgeInsets.all(mediaQuery.height * 0.02),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
               CustomCalendar(),
               SizedBox(
-                height: 50,
+                height: mediaQuery.height * 0.05,
               ),
               Container(
                 width: double.infinity,
-                height: 50,
+                height: mediaQuery.height * 0.05,
                 child: PageView(
                   controller: _pageController,
                   children: <Widget>[
                     Text(
                       "Configuration 1/3",
                       textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 25),
+                      style: TextStyle(fontSize: 25),
                     ),
                     Text(
                       "Configuration 2/3",
                       textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 25),
+                      style: TextStyle(fontSize: 25),
                     ),
                     Text(
                       "Configuration 3/3",
                       textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 25),
+                      style: TextStyle(fontSize: 25),
                     ),
                   ],
                   onPageChanged: (index) {
@@ -178,7 +175,7 @@ class StartScreenState extends State<StartScreen>
                 ),
               ),
               SizedBox(
-                height: 30,
+                height: mediaQuery.height * 0.04,
               ),
               InkWell(
                 onTap: () {
@@ -208,7 +205,7 @@ class StartScreenState extends State<StartScreen>
                 ),
               ),
               SizedBox(
-                height: 30,
+                height: mediaQuery.height * 0.04,
               ),
               InkWell(
                 onTap: () {
@@ -240,7 +237,7 @@ class StartScreenState extends State<StartScreen>
                 ),
               ),
               SizedBox(
-                height: 30,
+                height: mediaQuery.height * 0.04,
               ),
               InkWell(
                 onTap: () {
@@ -272,7 +269,7 @@ class StartScreenState extends State<StartScreen>
                 ),
               ),
               SizedBox(
-                height: 30,
+                height: mediaQuery.height * 0.04,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -282,7 +279,7 @@ class StartScreenState extends State<StartScreen>
                     style: TextStyle(fontSize: 25),
                   ),
                   Container(
-                    width: 270,
+                    width: mediaQuery.width * 0.7,
                     child: SliderTheme(
                       data: SliderTheme.of(context).copyWith(
                         activeTrackColor: Colors.blue[700],
@@ -310,19 +307,19 @@ class StartScreenState extends State<StartScreen>
               ),
               const Divider(),
               SizedBox(
-                height: 140,
+                height: mediaQuery.height * 0.15,
               ),
               NiceButton(
-                width: 255,
-                elevation: 8.0,
-                radius: 52.0,
+                width: mediaQuery.width * 0.7,
+                elevation: 10.0,
+                radius: 30.0,
                 text: "Start",
                 background: primaryColor,
                 icon: Icons.accessibility,
                 onPressed: () => _startWorkout(id),
               ),
               SizedBox(
-                height: 10,
+                height: mediaQuery.height * 0.04,
               ),
             ],
           ),
@@ -332,21 +329,3 @@ class StartScreenState extends State<StartScreen>
   }
 }
 
-class SliderWidget extends StatelessWidget {
-  final String textName;
-
-  SliderWidget({Key key, @required this.textName}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        alignment: Alignment.center,
-        height: 50,
-        width: double.infinity,
-        padding: EdgeInsets.only(left: 16, right: 16, top: 16),
-        child: Text(
-          textName,
-          style: TextStyle(color: Colors.grey),
-        ));
-  }
-}

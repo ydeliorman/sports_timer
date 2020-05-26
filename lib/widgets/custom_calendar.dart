@@ -60,6 +60,8 @@ class _CustomCalendarState extends State<CustomCalendar> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context).size;
+
     return Column(
       children: <Widget>[
         InkWell(
@@ -73,7 +75,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
           expand: _isExpanded,
           child: Container(
             width: double.infinity,
-            height: 300,
+            height: mediaQuery.height*0.4,
             child: CustomBarChart(
               startDayOfWeek: startDayOfWeek,
               endDayOfWeek: endDayOfWeek,

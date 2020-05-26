@@ -26,6 +26,8 @@ class _StartScreenItemState extends State<StartScreenItem> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context).size;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -36,8 +38,8 @@ class _StartScreenItemState extends State<StartScreenItem> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
-              width: 200,
-              height: 140,
+              width: mediaQuery.width * 0.6,
+              height: mediaQuery.height * 0.15,
               child: widget.title == "SETS"
                   ? NumberPicker.integer(
                       initialValue: int.parse(widget.textFormFieldValue),
@@ -86,9 +88,6 @@ class _StartScreenItemState extends State<StartScreenItem> {
                     ),
             ),
           ],
-        ),
-        Padding(
-          padding: const EdgeInsets.all(15.0),
         ),
       ],
     );
