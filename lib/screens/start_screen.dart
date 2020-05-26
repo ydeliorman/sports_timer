@@ -5,10 +5,10 @@ import 'package:sportstimer/models/timer_detail_model.dart';
 import 'package:sportstimer/providers/timer_detail_provider.dart';
 import 'package:sportstimer/screens/timer_screen.dart';
 import 'package:sportstimer/utils/appcolors.dart';
-import 'package:sportstimer/utils/number_picker_formatter.dart';
+import 'package:sportstimer/widgets/configuration.dart';
 import 'package:sportstimer/widgets/custom_calendar.dart';
-import 'package:sportstimer/widgets/expanded_section.dart';
-import 'package:sportstimer/widgets/number_picker.dart';
+import 'package:sportstimer/widgets/voice_slider.dart';
+import 'package:sportstimer/widgets/workout_item.dart';
 
 class StartScreen extends StatefulWidget {
   static String route = '/StartScreen';
@@ -28,7 +28,7 @@ class StartScreenState extends State<StartScreen>
   bool _isExpandedWork = false;
   bool _isExpandedRest = false;
   PageController _pageController = PageController();
-  double _sliderValue = 0;
+  double sliderValue = 0;
 
   ///Expande or collapes while clicking between rest, work or sets
   void _toggleExpand(int expandedItem) {
@@ -50,7 +50,7 @@ class StartScreenState extends State<StartScreen>
   }
 
   ///collapse all number pickers
-  void toggleOff() {
+  void collapseNumberPickers() {
     setState(() {
       _isExpandedSets = false;
       _isExpandedWork = false;
@@ -93,11 +93,13 @@ class StartScreenState extends State<StartScreen>
   ///adding timerDetail function
   void addTimerDetail() {
     int i = 1;
+    Map<String, String> timerData =
+        Provider.of<TimerProvider>(context).getTimerData();
     TimerDetailModel timerDetailModel = TimerDetailModel(
       id: "Configuration $i/3",
-      sets: sets,
-      restDuration: rest,
-      workDuration: work,
+      sets: timerData["sets"],
+      restDuration: timerData["rest"],
+      workDuration: timerData["work"],
     );
 
     i++;
@@ -124,6 +126,7 @@ class StartScreenState extends State<StartScreen>
 
     return Scaffold(
       backgroundColor: white2,
+      ///TODO YED sum of all height should be 1 in this page.wrap worukoutItems into container and ListviewBuilder
       body: Padding(
         padding: EdgeInsets.all(mediaQuery.height * 0.02),
         child: SingleChildScrollView(
@@ -134,177 +137,49 @@ class StartScreenState extends State<StartScreen>
                 height: mediaQuery.height * 0.05,
               ),
               Container(
-                width: double.infinity,
                 height: mediaQuery.height * 0.05,
-                child: PageView(
-                  controller: _pageController,
-                  children: <Widget>[
-                    Text(
-                      "Configuration 1/3",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: mediaQuery.width*0.065),
-                    ),
-                    Text(
-                      "Configuration 2/3",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize:  mediaQuery.width*0.065),
-                    ),
-                    Text(
-                      "Configuration 3/3",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize:  mediaQuery.width*0.065),
-                    ),
-                  ],
-                  onPageChanged: (index) {
-                    setState(
-                      () {
-                        TimerDetailModel timerDetail = timerDetails
-                            .where((timerDetail) =>
-                                timerDetail.id == "${index + 1}")
-                            .first;
-                        if (timerDetail == null)
-                          timerDetail = timerDetails[index];
-                        id = "${index + 1}";
-                        sets = timerDetail.sets;
-                        work = timerDetail.workDuration;
-                        rest = timerDetail.restDuration;
-                        toggleOff();
-                      },
-                    );
-                  },
+                width: mediaQuery.width * 0.8,
+                child: Configuration(
+                  parent: this,
+                  pageController: _pageController,
+                  timerDetails: timerDetails,
+                  toggleOff: collapseNumberPickers,
                 ),
               ),
               SizedBox(
                 height: mediaQuery.height * 0.04,
               ),
-              InkWell(
-                onTap: () {
-                  _toggleExpand(1);
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Text(
-                      'Sets',
-                      style: TextStyle(fontSize: mediaQuery.width*0.065),
-                    ),
-                    Spacer(),
-                    Text(
-                      sets,
-                      style: TextStyle(fontSize: mediaQuery.width*0.065, color: primaryColor),
-                    ),
-                  ],
-                ),
-              ),
-              ExpandedSection(
-                expand: _isExpandedSets,
-                child: StartScreenItem(
-                  "SETS",
-                  sets,
-                  this,
-                ),
+              WorkoutItem(
+                value: sets,
+                name: "SETS",
+                toggleExpand: _toggleExpand,
+                isExpanded: _isExpandedSets,
+                parent: this,
               ),
               SizedBox(
                 height: mediaQuery.height * 0.04,
               ),
-              InkWell(
-                onTap: () {
-                  _toggleExpand(2);
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Text(
-                      'Work',
-                      style: TextStyle(fontSize: mediaQuery.width*0.065),
-                    ),
-                    Spacer(),
-                    Text(
-                      NumberPickerFormatter.gatherTimeForRichText(work)[0] +
-                          ":" +
-                          NumberPickerFormatter.gatherTimeForRichText(work)[1],
-                      style: TextStyle(fontSize: mediaQuery.width*0.065, color: primaryColor),
-                    ),
-                  ],
-                ),
-              ),
-              ExpandedSection(
-                expand: _isExpandedWork,
-                child: StartScreenItem(
-                  "WORK",
-                  work,
-                  this,
-                ),
+              WorkoutItem(
+                value: work,
+                name: "WORK",
+                toggleExpand: _toggleExpand,
+                isExpanded: _isExpandedWork,
+                parent: this,
               ),
               SizedBox(
                 height: mediaQuery.height * 0.04,
               ),
-              InkWell(
-                onTap: () {
-                  _toggleExpand(3);
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Text(
-                      'Rest',
-                      style: TextStyle(fontSize: mediaQuery.width*0.065),
-                    ),
-                    Spacer(),
-                    Text(
-                      NumberPickerFormatter.gatherTimeForRichText(rest)[0] +
-                          ":" +
-                          NumberPickerFormatter.gatherTimeForRichText(rest)[1],
-                      style: TextStyle(fontSize: mediaQuery.width*0.065, color: primaryColor),
-                    ),
-                  ],
-                ),
-              ),
-              ExpandedSection(
-                expand: _isExpandedRest,
-                child: StartScreenItem(
-                  "REST",
-                  rest,
-                  this,
-                ),
+              WorkoutItem(
+                value: rest,
+                name: "REST",
+                toggleExpand: _toggleExpand,
+                isExpanded: _isExpandedRest,
+                parent: this,
               ),
               SizedBox(
                 height: mediaQuery.height * 0.04,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    'Volume',
-                    style: TextStyle(fontSize: mediaQuery.width*0.065),
-                  ),
-                  Container(
-                    width: mediaQuery.width * 0.7,
-                    child: SliderTheme(
-                      data: SliderTheme.of(context).copyWith(
-                        activeTrackColor: Colors.blue[700],
-                        inactiveTrackColor: Colors.blue[100],
-                        trackShape: RectangularSliderTrackShape(),
-                        trackHeight: 4.0,
-                        thumbColor: primaryColor,
-                        thumbShape:
-                            RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                        overlayColor: Colors.red.withAlpha(32),
-                        overlayShape:
-                            RoundSliderOverlayShape(overlayRadius: 28.0),
-                      ),
-                      child: Slider(
-                        value: _sliderValue,
-                        onChanged: (value) {
-                          setState(() {
-                            _sliderValue = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              VoiceSlider(sliderValue),
               const Divider(),
               SizedBox(
                 height: mediaQuery.height * 0.09,
@@ -328,4 +203,3 @@ class StartScreenState extends State<StartScreen>
     );
   }
 }
-

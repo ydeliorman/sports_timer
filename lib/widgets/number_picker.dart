@@ -4,12 +4,12 @@ import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
 import 'package:sportstimer/enums/StartScreenItemType.dart';
 import 'package:sportstimer/providers/timer_detail_provider.dart';
-import 'package:sportstimer/screens/start_screen.dart';
+import 'package:sportstimer/widgets/workout_item.dart';
 
 class StartScreenItem extends StatefulWidget {
   final String title;
   String textFormFieldValue;
-  StartScreenState parent;
+  WorkoutItemState parent;
 
   StartScreenItem(
     this.title,
@@ -54,7 +54,8 @@ class _StartScreenItemState extends State<StartScreenItem> {
                                   value.toString(), StartScreenItemType.Sets);
                         });
                         widget.parent.setState(() {
-                          widget.parent.sets = value.toString();
+                          widget.parent.widget.value = value.toString();
+                          widget.parent.widget.parent.sets = value.toString();
                         });
                       },
                     )
@@ -71,7 +72,8 @@ class _StartScreenItemState extends State<StartScreenItem> {
                                     value.toString(), StartScreenItemType.Work);
                           });
                           widget.parent.setState(() {
-                            widget.parent.work = value.toString();
+                            widget.parent.widget.value = value.toString();
+                            widget.parent.widget.parent.work = value.toString();
                           });
                         } else {
                           setState(() {
@@ -80,7 +82,8 @@ class _StartScreenItemState extends State<StartScreenItem> {
                                     value.toString(), StartScreenItemType.Rest);
                           });
                           widget.parent.setState(() {
-                            widget.parent.rest = value.toString();
+                            widget.parent.widget.value = value.toString();
+                            widget.parent.widget.parent.rest = value.toString();
                           });
                         }
                         widget.textFormFieldValue = value.toString();
