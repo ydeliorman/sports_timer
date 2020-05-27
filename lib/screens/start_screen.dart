@@ -126,15 +126,14 @@ class StartScreenState extends State<StartScreen>
 
     return Scaffold(
       backgroundColor: white2,
-      ///TODO YED sum of all height should be 1 in this page.wrap worukoutItems into container and ListviewBuilder
+
       body: Padding(
         padding: EdgeInsets.all(mediaQuery.height * 0.02),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              CustomCalendar(),
-              SizedBox(
-                height: mediaQuery.height * 0.05,
+              Container(
+                child: CustomCalendar(),
               ),
               Container(
                 height: mediaQuery.height * 0.05,
@@ -147,7 +146,7 @@ class StartScreenState extends State<StartScreen>
                 ),
               ),
               SizedBox(
-                height: mediaQuery.height * 0.04,
+                height: mediaQuery.height * 0.06,
               ),
               WorkoutItem(
                 value: sets,
@@ -179,22 +178,28 @@ class StartScreenState extends State<StartScreen>
               SizedBox(
                 height: mediaQuery.height * 0.04,
               ),
-              VoiceSlider(sliderValue),
+              Container(
+                  height: mediaQuery.height * 0.05,
+                  width: mediaQuery.width,
+                  child: VoiceSlider(sliderValue)),
               const Divider(),
               SizedBox(
-                height: mediaQuery.height * 0.09,
+                height: mediaQuery.height * 0.15,
               ),
-              NiceButton(
+              Container(
+                height: mediaQuery.height * 0.1,
                 width: mediaQuery.width * 0.7,
-                elevation: 10.0,
-                radius: 30.0,
-                text: "Start",
-                background: primaryColor,
-                icon: Icons.accessibility,
-                onPressed: () => _startWorkout(id),
+                child: NiceButton(
+                  elevation: 10.0,
+                  radius: 30.0,
+                  text: "Start",
+                  background: primaryColor,
+                  icon: Icons.accessibility,
+                  onPressed: () => _startWorkout(id),
+                ),
               ),
               SizedBox(
-                height: mediaQuery.height * 0.04,
+                height: mediaQuery.height * 0.05,
               ),
             ],
           ),

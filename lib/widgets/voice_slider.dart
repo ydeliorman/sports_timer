@@ -20,6 +20,7 @@ class _VoiceSliderState extends State<VoiceSlider> {
             'Volume',
             style: TextStyle(fontSize: constraints.maxWidth * 0.065),
           ),
+          Spacer(),
           Container(
             width: constraints.maxWidth * 0.7,
             child: SliderTheme(

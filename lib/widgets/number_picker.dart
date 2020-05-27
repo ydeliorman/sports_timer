@@ -26,7 +26,6 @@ class _StartScreenItemState extends State<StartScreenItem> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context).size;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -37,59 +36,55 @@ class _StartScreenItemState extends State<StartScreenItem> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Container(
-              width: mediaQuery.width * 0.6,
-              height: mediaQuery.height * 0.2,
-              child: widget.title == "SETS"
-                  ? NumberPicker.integer(
-                      initialValue: int.parse(widget.textFormFieldValue),
-                      minValue: 1,
-                      maxValue: 20,
-                      infiniteLoop: true,
-                      onChanged: (value) {
+            widget.title == "SETS"
+                ? NumberPicker.integer(
+                    initialValue: int.parse(widget.textFormFieldValue),
+                    minValue: 1,
+                    maxValue: 20,
+                    infiniteLoop: true,
+                    onChanged: (value) {
+                      setState(() {
+                        widget.textFormFieldValue = value.toString();
+                        Provider.of<TimerProvider>(context, listen: false)
+                            .setTimerData(
+                                value.toString(), StartScreenItemType.Sets);
+                      });
+                      widget.parent.setState(() {
+                        widget.parent.widget.value = value.toString();
+                        widget.parent.widget.parent.sets = value.toString();
+                      });
+                    },
+                  )
+                : NumberPicker.decimal(
+                    initialValue: double.parse(widget.textFormFieldValue),
+                    minValue: 0,
+                    maxValue: 15,
+                    decimalPlaces: 2,
+                    onChanged: (value) {
+                      if (widget.title == "WORK") {
                         setState(() {
-                          widget.textFormFieldValue = value.toString();
                           Provider.of<TimerProvider>(context, listen: false)
                               .setTimerData(
-                                  value.toString(), StartScreenItemType.Sets);
+                                  value.toString(), StartScreenItemType.Work);
                         });
                         widget.parent.setState(() {
                           widget.parent.widget.value = value.toString();
-                          widget.parent.widget.parent.sets = value.toString();
+                          widget.parent.widget.parent.work = value.toString();
                         });
-                      },
-                    )
-                  : NumberPicker.decimal(
-                      initialValue: double.parse(widget.textFormFieldValue),
-                      minValue: 0,
-                      maxValue: 15,
-                      decimalPlaces: 2,
-                      onChanged: (value) {
-                        if (widget.title == "WORK") {
-                          setState(() {
-                            Provider.of<TimerProvider>(context, listen: false)
-                                .setTimerData(
-                                    value.toString(), StartScreenItemType.Work);
-                          });
-                          widget.parent.setState(() {
-                            widget.parent.widget.value = value.toString();
-                            widget.parent.widget.parent.work = value.toString();
-                          });
-                        } else {
-                          setState(() {
-                            Provider.of<TimerProvider>(context, listen: false)
-                                .setTimerData(
-                                    value.toString(), StartScreenItemType.Rest);
-                          });
-                          widget.parent.setState(() {
-                            widget.parent.widget.value = value.toString();
-                            widget.parent.widget.parent.rest = value.toString();
-                          });
-                        }
-                        widget.textFormFieldValue = value.toString();
-                      },
-                    ),
-            ),
+                      } else {
+                        setState(() {
+                          Provider.of<TimerProvider>(context, listen: false)
+                              .setTimerData(
+                                  value.toString(), StartScreenItemType.Rest);
+                        });
+                        widget.parent.setState(() {
+                          widget.parent.widget.value = value.toString();
+                          widget.parent.widget.parent.rest = value.toString();
+                        });
+                      }
+                      widget.textFormFieldValue = value.toString();
+                    },
+                  ),
           ],
         ),
       ],

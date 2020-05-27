@@ -75,12 +75,15 @@ class _CustomCalendarState extends State<CustomCalendar> {
           expand: _isExpanded,
           child: Container(
             width: double.infinity,
-            height: mediaQuery.height*0.4,
+            height: mediaQuery.height * 0.4,
             child: CustomBarChart(
               startDayOfWeek: startDayOfWeek,
               endDayOfWeek: endDayOfWeek,
             ),
           ),
+        ),
+        SizedBox(
+          height: mediaQuery.height * 0.05,
         ),
       ],
     );
